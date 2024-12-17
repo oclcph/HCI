@@ -8,17 +8,20 @@
       <!-- 路由视图，根据路由显示不同页面 -->
       <router-view />
     </main>
+    <Footer />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 import Header from './components/Header.vue'; // 导入头部组件
+import Footer from "./components/Footer.vue";
 
 export default defineComponent({
   name: 'App',
   components: {
     Header,  // 注册 Header 组件
+    Footer,
   },
 });
 </script>

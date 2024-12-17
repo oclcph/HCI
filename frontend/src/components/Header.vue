@@ -7,6 +7,7 @@ export default defineComponent({
   setup() {
     const userStore = useUserStore();
     const isLoggedIn = ref(false); // 创建响应式状态
+    const currentPage = ref('home');
 
     onMounted(() => {
       // 逻辑代码
@@ -28,10 +29,16 @@ export default defineComponent({
       console.log(userStore.isLoggedIn);
       isLoggedIn.value = false;
     };
+
+    const setCurrentPage = (page: string) => {
+      currentPage.value = page;
+    }
     return {
+      currentPage,
       isLoggedIn,
       login,
       logout,
+      setCurrentPage,
     };
   },
 });
@@ -40,6 +47,32 @@ export default defineComponent({
 <template>
   <header class="flex justify-between p-4 bg-blue-600 text-white">
     <div class="logo">古诗词填空</div>
+    <nav class="flex items-center space-x-8 text-lg">
+      <router-link to="/"
+                   class="hover:underline"
+                   :class="{ 'font-bold': currentPage === 'home' }"
+                   @click="setCurrentPage('home')">
+        首页
+      </router-link>
+      <router-link to="/about"
+                   class="hover:underline"
+                   :class="{ 'font-bold': currentPage === 'about' }"
+                   @click="setCurrentPage('about')">
+        关于
+      </router-link>
+      <router-link to="/poems"
+                   class="hover:underline"
+                   :class="{ 'font-bold': currentPage === 'poems' }"
+                   @click="setCurrentPage('poems')">
+        诗词
+      </router-link>
+      <router-link to="/contact"
+                   class="hover:underline"
+                   :class="{ 'font-bold': currentPage === 'contact' }"
+                   @click="setCurrentPage('contact')">
+        联系我们
+      </router-link>
+    </nav>
     <div>
       <button
           v-if="!isLoggedIn"
