@@ -1,11 +1,17 @@
 <script lang="ts">
-import { defineComponent } from 'vue';
+import {defineComponent, onMounted, ref} from 'vue';
 import { useUserStore } from '../store/userStore';
 import {getUser} from "../api/user";
 
 export default defineComponent({
   setup() {
     const userStore = useUserStore();
+    const isLoggedIn = ref(false); // 创建响应式状态
+
+    onMounted(() => {
+      // 逻辑代码
+      console.log(123456);
+    });
 
     const login = () => {
       // getUser().then((user) => {
@@ -14,14 +20,16 @@ export default defineComponent({
       // 模拟登录
       userStore.login({ name: 'John Doe' });
       console.log(userStore.isLoggedIn);
+      isLoggedIn.value = true;
     };
 
     const logout = () => {
       userStore.logout();
+      console.log(userStore.isLoggedIn);
+      isLoggedIn.value = false;
     };
-
     return {
-      isLoggedIn: userStore.isLoggedIn,
+      isLoggedIn,
       login,
       logout,
     };
