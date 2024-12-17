@@ -8,6 +8,7 @@ export default defineComponent({
     const userStore = useUserStore();
     const isLoggedIn = ref(false); // 创建响应式状态
     const currentPage = ref('home');
+    const showDropdown = ref(false);
 
     onMounted(() => {
       // 逻辑代码
@@ -23,11 +24,20 @@ export default defineComponent({
       console.log(userStore.isLoggedIn);
       isLoggedIn.value = true;
     };
+    const toggleDropdown = () => {
+      showDropdown.value = !showDropdown.value; // 切换下拉框显示
+    };
 
+
+    const register = () => {
+      isLoggedIn.value = true;
+
+    }
     const logout = () => {
       userStore.logout();
       console.log(userStore.isLoggedIn);
       isLoggedIn.value = false;
+      showDropdown.value = false; // 登出时隐藏下拉框
     };
 
     const setCurrentPage = (page: string) => {
@@ -35,8 +45,11 @@ export default defineComponent({
     }
     return {
       currentPage,
+      showDropdown,
       isLoggedIn,
+      toggleDropdown,
       login,
+      register,
       logout,
       setCurrentPage,
     };
@@ -45,7 +58,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <header class="flex justify-between p-4 bg-blue-600 text-white">
+  <header class="flex justify-between p-4 bg-blue-600 text-white text-xl">
     <div class="logo">古诗词填空</div>
     <nav class="flex items-center space-x-8 text-lg">
       <router-link to="/"
@@ -54,39 +67,54 @@ export default defineComponent({
                    @click="setCurrentPage('home')">
         首页
       </router-link>
-      <router-link to="/about"
-                   class="hover:underline"
-                   :class="{ 'font-bold': currentPage === 'about' }"
-                   @click="setCurrentPage('about')">
-        关于
-      </router-link>
       <router-link to="/poems"
                    class="hover:underline"
                    :class="{ 'font-bold': currentPage === 'poems' }"
                    @click="setCurrentPage('poems')">
         诗词
       </router-link>
-      <router-link to="/contact"
+
+      <!-- 将“关于”放到“登录”旁边 -->
+      <router-link to="/about"
                    class="hover:underline"
-                   :class="{ 'font-bold': currentPage === 'contact' }"
-                   @click="setCurrentPage('contact')">
-        联系我们
+                   :class="{ 'font-bold': currentPage === 'about' }"
+                   @click="setCurrentPage('about')">
+        关于
       </router-link>
     </nav>
-    <div>
-      <button
-          v-if="!isLoggedIn"
-          @click="login"
-          class="bg-yellow-500 px-4 py-2 rounded hover:bg-yellow-400">
-        登录
-      </button>
-      <button
-          v-else
-          @click="logout"
-          class="bg-red-500 px-4 py-2 rounded hover:bg-red-400">
-        退出
+
+    <div class="relative flex items-center">
+      <div v-if="isLoggedIn" class="relative">
+        <img
+            src="../assets/vue.svg"
+            alt="个人头像"
+            class="h-9 rounded-full cursor-pointer hover:opacity-75 w-32"
+            @click="toggleDropdown"
+        />
+        <div v-if="showDropdown" class="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md z-10">
+          <router-link to="/profile"
+                       class="block px-4 py-2 hover:bg-gray-200 text-gray-800 text-sm"
+                       @click="setCurrentPage('profile')"
+          >
+            个人中心
+          </router-link>
+          <router-link to="/settings"
+                       class="block px-4 py-2 hover:bg-gray-200 text-gray-800 text-sm"
+                       @click="setCurrentPage('settings')"
+          >
+            设置
+          </router-link>
+          <button @click="logout"
+                  class="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100 text-sm">
+            退出登录
+          </button>
+        </div>
+      </div>
+      <button v-else @click="login" class="bg-yellow-500 px-4 py-2 rounded hover:bg-yellow-400 text-sm w-32">
+        登录/注册
       </button>
     </div>
+
   </header>
 </template>
 
@@ -95,5 +123,11 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+.relative {
+   position: relative;
+ }
+.absolute {
+  position: absolute;
 }
 </style>
