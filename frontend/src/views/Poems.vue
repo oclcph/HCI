@@ -9,15 +9,8 @@ export default defineComponent({
       { title: '春晓', author: '孟浩然' },
     ]);
 
-    const addPoem = () => {
-      const newPoem = { title: '新诗词', author: '新作者' }; // 示例数据
-      poems.value.push(newPoem);
-      alert('新诗词已添加！');
-    };
-
     return {
       poems,
-      addPoem,
     };
   },
 });
@@ -25,20 +18,49 @@ export default defineComponent({
 
 <template>
   <div class="poems p-5">
-    <h1 class="text-2xl font-bold mb-4">诗词列表</h1>
-    <ul class="list-disc pl-5">
-      <li v-for="(poem, index) in poems" :key="index" class="mb-2">
-        <span class="font-semibold">{{ poem.title }}</span> - <span>{{ poem.author }}</span>
+    <!-- 标题 -->
+    <h1 class="text-3xl font-extrabold mb-6 text-center text-indigo-700 animate-fade-in delay-200">诗词列表</h1>
+    <!-- 列表部分 -->
+    <ul class="list-disc pl-5 space-y-4 max-w-xl mx-auto animate-fade-in delay-400">
+      <li
+          v-for="(poem, index) in poems"
+          :key="index"
+          class="p-4 bg-gray-100 shadow-lg rounded-lg transition-transform transform hover:scale-105"
+      >
+        <div class="font-semibold text-lg text-gray-800">{{ poem.title }}</div>
+        <div class="text-gray-600 text-sm">{{ poem.author }}</div>
       </li>
     </ul>
-    <button @click="addPoem" class="mt-4 bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600">
-      添加诗词
-    </button>
   </div>
 </template>
 
 <style scoped>
 .poems {
   padding: 20px;
+}
+
+.animate-fade-in {
+  opacity: 0;
+  transform: translateY(-20px);
+  animation: fade-in 1s ease-out forwards;
+}
+
+.delay-200 {
+  animation-delay: 0.2s;
+}
+
+.delay-400 {
+  animation-delay: 0.4s;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>
