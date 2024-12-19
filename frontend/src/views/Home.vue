@@ -1,32 +1,58 @@
 <template>
   <div class="container mx-auto p-6">
     <!-- 标题文字 -->
-    <h1 class="text-4xl font-bold text-center mb-6 text-indigo-700 opacity-0 animate-fade-in">欢迎来到古诗词填空</h1>
-    <!-- 描述文字 -->
-    <p class="text-xl text-center mb-8 text-gray-700 opacity-0 animate-fade-in delay-200">选择一个古诗词并完成填空练习，提升您的文学素养。</p>
+    <h1 class="text-5xl font-extrabold text-center mb-6 text-gradient opacity-0 animate-fade-in">
+      欢迎来到古诗词填空
+    </h1>
 
-    <!-- 卡片网格 -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 opacity-0 animate-fade-in delay-400">
-      <!-- 单个卡片 -->
-      <div class="bg-white border border-gray-300 p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:shadow-2xl duration-300 ease-in-out">
-        <h2 class="text-2xl font-semibold text-gray-800 mb-4">古诗词1</h2>
-        <p class="text-gray-600 mb-4">填空内容:</p>
-        <input
-            v-model="blank"
-            class="w-full border border-gray-300 p-3 rounded-md text-lg
-                 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
-            placeholder="请输入诗句的词语"
-        />
-        <button
-            @click="submit"
-            class="w-full bg-blue-600 text-white px-4 py-3 rounded-md
-                 hover:bg-blue-500 focus:ring-2 focus:ring-blue-400
-                 transition duration-200 ease-in-out"
-        >
-          提交
-        </button>
-      </div>
-      <!-- 更多卡片 -->
+    <!-- 描述文字 -->
+    <p class="text-xl text-center mb-8 text-gray-500 opacity-0 animate-fade-in delay-200">
+      选择您的年级并开始练习古诗词填空，提升您的文学素养。
+    </p>
+
+    <!-- 提示语文字 -->
+    <div class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-4 rounded-lg shadow-lg mb-6 animate-fade-in delay-200">
+      <p class="text-center text-lg font-medium">
+        请选择您的年级，开始您的古诗词填空练习之旅。
+      </p>
+    </div>
+
+    <!-- 年级选择按钮 -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 opacity-0 animate-fade-in delay-400">
+      <!-- 选择按钮 -->
+      <button
+          @click="selectGrade('小学')"
+          class="w-full text-center text-2xl font-semibold text-white mb-4 py-4 rounded-lg bg-blue-500 hover:bg-blue-600 transition-transform transform hover:scale-110 hover:translate-y-1"
+      >
+        小学
+      </button>
+
+      <button
+          @click="selectGrade('初中')"
+          class="w-full text-center text-2xl font-semibold text-white mb-4 py-4 rounded-lg bg-green-500 hover:bg-green-600 transition-transform transform hover:scale-110 hover:translate-y-1"
+      >
+        初中
+      </button>
+
+      <button
+          @click="selectGrade('高中')"
+          class="w-full text-center text-2xl font-semibold text-white mb-4 py-4 rounded-lg bg-yellow-500 hover:bg-yellow-600 transition-transform transform hover:scale-110 hover:translate-y-1"
+      >
+        高中
+      </button>
+
+      <button
+          @click="selectGrade('我不是学生')"
+          class="w-full text-center text-2xl font-semibold text-white mb-4 py-4 rounded-lg bg-red-500 hover:bg-red-600 transition-transform transform hover:scale-110 hover:translate-y-1"
+      >
+        我不是学生
+      </button>
+    </div>
+
+    <!-- 选择年级后的反馈区域 -->
+    <div v-if="selectedGrade" class="mt-8 text-center text-xl font-semibold text-gray-800">
+      <p>您选择的年级是：<span class="text-indigo-600">{{ selectedGrade }}</span></p>
+      <p class="mt-4">请选择一个适合您的古诗词并完成填空练习。</p>
     </div>
   </div>
 </template>
@@ -36,16 +62,15 @@ import { defineComponent, ref } from 'vue';
 export default defineComponent({
   name: 'Home',
   setup() {
-    const blank = ref<string>(''); // 用于绑定输入框的值
+    const selectedGrade = ref<string | null>(null);
 
-    const submit = () => {
-      alert(`你填写的词语是：${blank.value}`);
-      // 在这里可以添加验证逻辑和处理逻辑
+    // 选择年级函数
+    const selectGrade = (grade: string) => {
+      selectedGrade.value = grade;
     };
-
     return {
-      blank,
-      submit,
+      selectedGrade,
+      selectGrade,
     };
   },
 });
@@ -75,5 +100,21 @@ export default defineComponent({
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+button {
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+/* 渐变色的文字 */
+.text-gradient {
+  background: linear-gradient(90deg, #4f46e5, #7c3aed);
+  -webkit-background-clip: text; /* 前缀版本，用于 WebKit 引擎的浏览器，如 Safari */
+  background-clip: text; /* 标准属性，用于大部分现代浏览器 */
+  color: transparent; /* 文字颜色设为透明，让背景渐变显现 */
+}
+
+/* 动画的文本效果 */
+.text-center {
+  text-align: center;
 }
 </style>
