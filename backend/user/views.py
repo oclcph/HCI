@@ -14,9 +14,9 @@ def register_user(request):
     用户注册接口：
     接收用户名、密码和确认密码，创建新用户，返回 JWT 令牌。
     """
-    username = request.data.get('phone')
+    username = request.data.get('username')
     password = request.data.get('password')
-    password2 = request.data.get('confirmPassword')
+    password2 = request.data.get('password2')
 
     # 确认密码是否一致
     if password != password2:

@@ -43,8 +43,9 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'rest_framework',
     'rest_framework.authtoken',  # 可选：如果你想使用原生 token 认证
-    'corsheaders',
+    'corsheaders',#允许跨域
     'user',  # 我们的用户注册应用
+    'poetry_app',#保存诗词的内容（Poetry和Sentence）
 ]
 
 REST_FRAMEWORK = {
@@ -68,13 +69,14 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
-    "django.middleware.common.CommonMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',  # 确保在此行之后添加
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+
 ROOT_URLCONF = "config.urls"
-APPEND_SLASH = False
 
 TEMPLATES = [
     {
@@ -94,15 +96,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "hci",
-        'USER': 'cph',                      # 数据库用户名
+        "NAME": "poemsuser",
+        'USER': 'root',                      # 数据库用户名
         'PASSWORD': '123456',              # 数据库密码
         'HOST': 'localhost',                   # 数据库主机，通常是 localhost 或 127.0.0.1
         'PORT': '3306',                        # 数据库端口，MySQL 默认端口是 3306
@@ -150,3 +151,4 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+APPEND_SLASH=False

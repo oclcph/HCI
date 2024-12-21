@@ -20,5 +20,5 @@ from django.urls import path,include
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/users/", include('user.urls')),  # 引入应用 'user' 的路由
+    path('api/user/', include('user.urls')),  # 引入应用 'user' 的路由
 ]
