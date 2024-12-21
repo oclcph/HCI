@@ -17,7 +17,7 @@ export const getUser = () =>{
 }
 
 export const loginApi = (loginInfo: LoginInfo) => {
-    return axios.post(`${USER_MODULE}/login`, null, {params: loginInfo})
+    return axios.post(`${USER_MODULE}/login`, loginInfo)
         .then(res => {
             return res
         })

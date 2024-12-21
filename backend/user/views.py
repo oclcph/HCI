@@ -50,7 +50,7 @@ def login_user(request):
     用户登录接口：
     接收用户名和密码，验证用户，返回 JWT 令牌。
     """
-    username = request.data.get('username')
+    username = request.data.get('phone')
     password = request.data.get('password')
 
     # 验证用户名和密码
