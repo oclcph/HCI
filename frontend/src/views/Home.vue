@@ -44,7 +44,7 @@ export default defineComponent({
 }
 </style>
 -->
-<<template>
+<template>
   <div class="home-page">
     <header class="header">
       <h1>欢迎来到古诗词网!</h1>
@@ -97,7 +97,6 @@ export default {
 </script>
 
 <style scoped>
-
 .home-page {
   text-align: center;
 }
@@ -125,6 +124,7 @@ h2{
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: flex-start; /* Align items to the start of the cross axis */
   gap: 10px;
 }
 
@@ -134,20 +134,18 @@ h2{
   border-radius: 10px;
   margin: 10px;
   padding: 20px;
-  width: 280px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   overflow: hidden;
 }
 
 .large {
-  width: 40%;
+  width: 45%; /* Adjusted to ensure two large items fit in a row */
   height: 250px;
 }
 
 .small {
-  width: 26%;
+  width: 30%; /* Adjusted to ensure three small items fit in a row */
   height: 210px;
-  margin: 8px;
 }
 
 .item-content {
@@ -156,7 +154,7 @@ h2{
   left: 0;
   width: 100%;
   padding: 15px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.5) 68%, rgba(255, 255, 255, 0) 100%); /* Semi-transparent white background */
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.5) 68%, rgba(255, 255, 255, 0) 100%);
   color: #333;
   z-index: 1;
 }
