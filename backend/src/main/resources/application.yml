@@ -7,8 +7,8 @@ spring:
   #这一行指定了数据源配置的相关项，用于连接和管理数据库。
   datasource:
     #这一行配置了数据库的连接 URL，指定了数据库的地址、端口、数据库名称等信息
-    url: jdbc:mysql://localhost:3306/hci?characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
-    username: cph
+    url: jdbc:mysql://localhost:3306/hci_2?characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
 
     #这一行指定了 JPA（Java Persistence API）的相关配置。
     password: 123456
