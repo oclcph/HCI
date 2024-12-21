@@ -5,31 +5,34 @@
       <p class="subtitle">请选择一个模式开始尝试</p>
     </header>
     <div class="container">
-      <div class="item small bg-white shadow-lg rounded-lg overflow-hidden cursor-pointer pen-cursor" @click="handleClick('简单模式')">
+      <div class="item small bg-white shadow-lg rounded-lg overflow-hidden cursor-pointer transition-transform transform hover:-translate-y-1" @click="handleClick('简单模式')">
         <div class="item-content">
           <h2 class="cta">简单模式</h2>
         </div>
         <img src="../assets/l3.jpg" alt="模式1" class="item-image" />
       </div>
-      <div class="item small bg-white shadow-lg rounded-lg overflow-hidden cursor-pointer pen-cursor" @click="handleClick('中等模式')">
+      <div class="item small bg-white shadow-lg rounded-lg overflow-hidden cursor-pointer transition-transform transform hover:-translate-y-1" @click="handleClick('中等模式')">
         <div class="item-content">
           <h2 class="cta">中等模式</h2>
         </div>
         <img src="../assets/l4.jpg" alt="模式2" class="item-image" />
       </div>
-      <div class="item small bg-white shadow-lg rounded-lg overflow-hidden cursor-pointer pen-cursor" @click="handleClick('困难模式')">
+      <div class="item small bg-white shadow-lg rounded-lg overflow-hidden cursor-pointer transition-transform transform hover:-translate-y-1" @click="handleClick('困难模式')">
         <div class="item-content p-6">
           <h2 class="cta">困难模式</h2>
         </div>
         <img src="../assets/l5.jpg" alt="模式3" class="item-image w-full h-48 object-cover" />
       </div>
-      <div class="item large bg-white shadow-lg rounded-lg overflow-hidden cursor-pointer pen-cursor" @click="handleClick('随机模式')">
-        <div class="item-content">
+      <div
+          class="item large bg-white shadow-lg rounded-lg overflow-hidden cursor-pointer transition-transform transform hover:-translate-y-1"
+          @click="handleClick('随机模式')"
+      >
+        <div class="item-content p-4">
           <h2 class="cta">随机模式</h2>
         </div>
         <img src="../assets/l1.jpg" alt="随机模式" class="item-image" />
       </div>
-      <div class="item large bg-white shadow-lg rounded-lg overflow-hidden cursor-pointer pen-cursor" @click="handleClick('诗词收藏')">
+      <div class="item large bg-white shadow-lg rounded-lg overflow-hidden cursor-pointer transition-transform transform hover:-translate-y-1" @click="handleClick('诗词收藏')">
         <div class="item-content">
           <h2 class="cta">诗词收藏</h2>
         </div>
