@@ -1,7 +1,7 @@
 <script lang="ts">
-import {defineComponent, onMounted, ref, onBeforeUnmount } from 'vue';
+import {defineComponent, onMounted, ref, onBeforeUnmount, computed} from 'vue';
 import { useUserStore } from '../store/userStore';
-import {getUser} from "../api/user";
+import {getUser, loginApi, registerApi } from "../api/user";
 import {useRouter} from "vue-router";
 
 export default defineComponent({
@@ -11,6 +11,23 @@ export default defineComponent({
     const currentPage = ref('home');
     const showDropdown = ref(false);
     const dropdownMenu = ref<HTMLDivElement | null>(null);
+    const showLogin = ref(false)
+    const showRegister = ref(false)
+    const phone = ref(''); // 绑定输入框中的电话
+    const password = ref(''); // 绑定输入框中的密码
+    const isPasswordVisible = ref(false);
+
+    const registerName = ref('')
+    const confirmPassword = ref('')
+    const hasTelInput = computed(() => phone.value != '')
+    // 密码是否为空
+    const hasPasswordInput = computed(() => password.value != '')
+    // 重复密码是否为空
+    const hasConfirmPasswordInput = computed(() => confirmPassword.value != '')
+
+    const chinaMobileRegex = /^1(3[0-9]|4[579]|5[0-35-9]|6[2567]|7[0-8]|8[0-9]|9[189])\d{8}$/
+    const telLegal = computed(() => chinaMobileRegex.test(phone.value))
+    const isPasswordIdentical = computed(() => password.value == confirmPassword.value)
 
     const closeDropdown = (event: MouseEvent) => {
       if (
@@ -19,6 +36,7 @@ export default defineComponent({
       ) {
         showDropdown.value = false;
       }
+
     };
 
     onMounted(() => {
@@ -31,22 +49,47 @@ export default defineComponent({
       document.removeEventListener('click', closeDropdown);
     });
 
-    const login = () => {
-      // getUser().then((user) => {
-      //   console.log(user);
-      // })
-      // 模拟登录
-      userStore.login({ name: 'John Doe' });
-      console.log(userStore.isLoggedIn);
-      isLoggedIn.value = true;
+    const showLoginPage = () => {
+      showLogin.value = true;
+      showRegister.value = false;
+      phone.value = '';
+      password.value = '';
+      confirmPassword.value = '';
     };
+
+    const showRegisterPage = () => {
+      showLogin.value = false;
+      showRegister.value = true;
+      phone.value = '';
+      password.value = '';
+      confirmPassword.value = '';
+    };
+
+    const login = () => {
+      loginApi({
+        phone: phone.value,
+        password: password.value,
+      }).then(() => {
+        isLoggedIn.value = true;
+        showLogin.value = false;
+      })
+    }
+
     const toggleDropdown = () => {
       showDropdown.value = !showDropdown.value; // 切换下拉框显示
     };
-
+    const togglePasswordVisibility = () => {
+      isPasswordVisible.value = !isPasswordVisible.value;
+    }
 
     const register = () => {
-      isLoggedIn.value = true;
+      registerApi({
+        phone: phone.value,
+        password: password.value,
+        confirmPassword: confirmPassword.value,
+      }).then((res) => {
+        console.log(res)
+      })
 
     }
     const logout = () => {
@@ -61,12 +104,33 @@ export default defineComponent({
     }
 
     return {
+      /* 登录 */
+      phone,
+      password,
+      showLogin,
+
+      /* 注册 */
+      registerName,
+      confirmPassword,
+      showRegister,
+      isPasswordIdentical,
+      hasTelInput,
+      hasPasswordInput,
+      hasConfirmPasswordInput,
+      telLegal,
+
+      /* 页面切换 */
       currentPage,
       showDropdown,
       isLoggedIn,
       dropdownMenu,
-      toggleDropdown,
+      isPasswordVisible,
+
+      togglePasswordVisibility,
       login,
+      toggleDropdown,
+      showRegisterPage,
+      showLoginPage,
       register,
       logout,
       setCurrentPage,
@@ -127,11 +191,150 @@ export default defineComponent({
           </router-link>
         </div>
       </div>
-      <button v-else @click="login" class="bg-yellow-500 px-4 py-2 rounded hover:bg-yellow-400 text-sm w-32">
+      <button v-else @click="showLoginPage" class="bg-yellow-500 px-4 py-2 rounded hover:bg-yellow-400 text-sm w-32">
         登录/注册
       </button>
-    </div>
+      <!-- 登录弹窗 -->
+      <div v-if="showLogin" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-20">
+        <!-- 弹窗内容 -->
+        <div class="bg-white w-96 p-6 rounded-lg shadow-xl transform transition-all duration-300 ease-in-out scale-95 hover:scale-100">
+          <h2 class="text-2xl font-semibold text-gray-700 mb-6 text-center">登录</h2>
+          <form @submit.prevent="login">
+            <div class="mb-4">
+              <label for="phone" class="block text-sm font-medium text-gray-700">手机号码/用户名</label>
+              <input
+                  id="phone"
+                  v-model="phone"
+                  type="tel"
+                  class="w-full mt-1 p-3 border border-gray-300 rounded-md text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  placeholder="请输入手机号码/用户名"
+                  required
+              />
+              <label v-if="hasTelInput && !telLegal" for="tel" class="text-red-500 text-sm">
+                手机号不合法
+              </label>
+            </div>
+            <div class="mb-4">
+              <label for="password" class="block text-sm font-medium text-gray-700">密码</label>
+              <div class="relative">
+                <input
+                    id="password"
+                    v-model="password"
+                    :type="isPasswordVisible ? 'text' : 'password'"
+                    class="w-full mt-1 p-3 border border-gray-300 rounded-md text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    placeholder="请输入密码"
+                    required
+                />
+                <!-- 切换密码显示状态按钮 -->
+                <button
+                    type="button"
+                    @click="togglePasswordVisibility"
+                    class="absolute right-3 top-1/2 transform -translate-y-1/2"
+                >
+                </button>
+              </div>
+            </div>
+            <div class="flex justify-between items-center">
+              <button type="submit" class="bg-blue-500 text-white py-2 px-6 rounded-md shadow-md hover:bg-blue-400 transition duration-200 text-sm">
+                登录
+              </button>
+              <button
+                  type="button"
+                  @click="() => { showLogin = false; phone = ''; password = ''; }"
+                  class="text-gray-600 hover:text-gray-950 text-sm font-medium transition duration-200"
+              >
+                取消
+              </button>
+            </div>
 
+          </form>
+          <!-- 注册链接 -->
+          <p class="text-center text-sm mt-4">
+            <span @click="showRegisterPage" class="text-blue-500 cursor-pointer">没有账号？点击这里注册</span>
+          </p>
+        </div>
+      </div>
+
+      <div v-if="showRegister" ref="registerMenu" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-20">
+        <div class="bg-white w-96 p-6 rounded-lg shadow-xl transform transition-all duration-300 ease-in-out scale-95 hover:scale-100">
+          <h2 class="text-2xl font-semibold text-gray-700 mb-6 text-center">注册</h2>
+          <form @submit.prevent="register">
+            <div class="mb-4">
+              <label for="phone" class="block text-sm font-medium text-gray-700">手机号码</label>
+              <input
+                  id="phone"
+                  v-model="phone"
+                  type="tel"
+                  class="w-full mt-1 p-2 border border-gray-300 rounded-md text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  placeholder="请输入手机号码"
+                  required
+              />
+              <label v-if="hasTelInput && !telLegal" for="tel" class="text-red-500 text-sm">
+                手机号不合法
+              </label>
+            </div>
+            <div class="mb-4">
+              <label for="password" class="block text-sm font-medium text-gray-700">密码</label>
+              <div class="relative">
+                <input
+                    id="password"
+                    v-model="password"
+                    :type="isPasswordVisible ? 'text' : 'password'"
+                    class="w-full mt-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    placeholder="请输入密码"
+                    required
+                />
+                <!-- 切换密码显示状态按钮 -->
+                <button
+                    type="button"
+                    @click="togglePasswordVisibility"
+                    class="absolute right-3 top-1/2 transform -translate-y-1/2"
+                >
+                </button>
+              </div>
+            </div>
+            <!-- 确认密码 -->
+            <div class="mb-4">
+              <label for="confirmPassword" class="block text-sm font-medium text-gray-700">确认密码</label>
+              <div class="relative">
+                <input
+                    id="confirmPassword"
+                    v-model="confirmPassword"
+                    :type="isPasswordVisible ? 'text' : 'password'"
+                    class="w-full mt-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    placeholder="请再次输入密码"
+                    required
+                />
+                <!-- 切换密码显示状态按钮 -->
+                <button
+                    type="button"
+                    @click="togglePasswordVisibility"
+                    class="absolute right-3 top-1/2 transform -translate-y-1/2"
+                >
+                </button>
+                <label v-if="hasConfirmPasswordInput && !isPasswordIdentical" for="tel" class="text-red-500 text-sm">两次密码不一致</label>
+              </div>
+            </div>
+
+            <div class="flex justify-between items-center">
+              <button type="submit" class="bg-blue-500 text-white py-2 px-6 rounded-md shadow-md hover:bg-blue-400 transition duration-200 text-sm">
+                注册
+              </button>
+              <button
+                  type="button"
+                  @click="() => {showRegister = false; password = ''; phone = ''; registerName = ''; confirmPassword = ''}"
+                  class="text-gray-600 hover:text-gray-950 text-sm font-medium transition duration-200"
+              >
+                取消
+              </button>
+            </div>
+          </form>
+          <p class="text-center text-sm mt-4">
+            <span @click="showLoginPage" class="text-blue-500 cursor-pointer">已有账号？点击这里登录</span>
+          </p>
+        </div>
+      </div>
+    </div>
   </header>
 </template>
 
@@ -154,5 +357,29 @@ header {
   text-decoration: none; /* 去掉下划线 */
   transition: color 0.3s ease; /* 颜色变化过渡效果 */
   cursor: pointer; /* 鼠标悬停时显示为手型 */
+}
+/* 弹窗的背景遮罩样式 */
+.fixed {
+  position: fixed;
+}
+.inset-0 {
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+.bg-gray-600 {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+input[type="password"],
+input[type="text"] {
+  background-color: #fff;
+  color: #333; /* 确保输入内容清晰可见 */
+  font-size: 16px; /* 设置字体大小 */
+}
+input::placeholder {
+  font-size: 16px; /* 设置字体大小 */
+  color: #888; /* 设置颜色，可以根据需要修改 */
+  font-style: italic; /* 可选：设置字体样式 */
 }
 </style>
