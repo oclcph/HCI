@@ -3,6 +3,7 @@ import {defineComponent, onMounted, ref, onBeforeUnmount, computed} from 'vue';
 import { useUserStore } from '../store/userStore';
 import {getUser, loginApi, registerApi } from "../api/user";
 import {useRouter} from "vue-router";
+import { ElMessage } from 'element-plus';
 
 export default defineComponent({
   setup() {
@@ -72,6 +73,13 @@ export default defineComponent({
       }).then(() => {
         isLoggedIn.value = true;
         showLogin.value = false;
+        phone.value = '';
+        password.value = '';
+        confirmPassword.value = '';
+        ElMessage.success('登陆成功')
+      }).catch((error) => {
+        let res = error.response
+        ElMessage.error(res.data.error)
       })
     }
 
@@ -87,9 +95,19 @@ export default defineComponent({
         phone: phone.value,
         password: password.value,
         confirmPassword: confirmPassword.value,
-      }).then((res) => {
-        console.log(res)
+      }).then(() => {
+        phone.value = '';
+        password.value = '';
+        confirmPassword.value = '';
+        showRegister.value = false;
+        showLogin.value = true;
+        ElMessage.success('注册成功，请返回登录')
       })
+          .catch((error) => {
+            let res = error.response
+            console.log(res.data.error)
+            ElMessage.error(res.data.error)
+          })
 
     }
     const logout = () => {
