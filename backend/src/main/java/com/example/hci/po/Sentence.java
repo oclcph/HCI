@@ -9,6 +9,7 @@ import javax.persistence.*;
 @Entity
 @Setter
 public class Sentence {
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")
     private Long id;
