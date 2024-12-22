@@ -70,16 +70,17 @@ export default defineComponent({
       loginApi({
         phone: phone.value,
         password: password.value,
-      }).then(() => {
-        isLoggedIn.value = true;
-        showLogin.value = false;
-        phone.value = '';
-        password.value = '';
-        confirmPassword.value = '';
-        ElMessage.success('登陆成功')
-      }).catch((error) => {
-        let res = error.response
-        ElMessage.error(res.data.error)
+      }).then((res) => {
+        if (res.data.code === '000') {
+          isLoggedIn.value = true;
+          showLogin.value = false;
+          phone.value = '';
+          password.value = '';
+          confirmPassword.value = '';
+          ElMessage.success('登陆成功')
+        } else if (res.data.code === '400'){
+          ElMessage.error(res.data.message)
+        }
       })
     }
 
@@ -95,19 +96,18 @@ export default defineComponent({
         phone: phone.value,
         password: password.value,
         confirmPassword: confirmPassword.value,
-      }).then(() => {
-        phone.value = '';
-        password.value = '';
-        confirmPassword.value = '';
-        showRegister.value = false;
-        showLogin.value = true;
-        ElMessage.success('注册成功，请返回登录')
+      }).then((res) => {
+        if (res.data.code === '000') {
+          phone.value = '';
+          password.value = '';
+          confirmPassword.value = '';
+          showRegister.value = false;
+          showLogin.value = true;
+          ElMessage.success('注册成功，请返回登录')
+        } else if (res.data.code === '400'){
+          ElMessage.error(res.data.message)
+        }
       })
-          .catch((error) => {
-            let res = error.response
-            console.log(res.data.error)
-            ElMessage.error(res.data.error)
-          })
 
     }
     const logout = () => {
