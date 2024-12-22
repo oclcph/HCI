@@ -2,6 +2,7 @@ package com.example.hci.po;
 
 import com.example.hci.enums.PoetryTypeEnum;
 import com.example.hci.enums.PoetryLevelEnum;
+import com.example.hci.vo.PoetryVO;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -38,4 +39,14 @@ public class Poetry {
     @Enumerated(EnumType.STRING)
     private PoetryTypeEnum type;
 
+    public PoetryVO toVO(){
+        PoetryVO poetryVO = new PoetryVO();
+        poetryVO.setId(this.id);
+        poetryVO.setTitle(this.title);
+        poetryVO.setAuthor(this.author);
+        poetryVO.setDynasty(this.dynasty);
+        poetryVO.setLevel(this.level);
+        poetryVO.setType(this.type);
+        return poetryVO;
+    }
 }

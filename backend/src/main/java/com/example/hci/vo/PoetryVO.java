@@ -20,6 +20,7 @@ public class PoetryVO {
     // 根据上句选下句直接从所有诗词里面拿Sentence
 
     private PoetryLevelEnum level;
+    private String dynasty;
     public Poetry toPO() {
         Poetry poetry = new Poetry();
         poetry.setId(id);
