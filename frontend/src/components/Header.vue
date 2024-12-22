@@ -70,16 +70,17 @@ export default defineComponent({
       loginApi({
         phone: phone.value,
         password: password.value,
-      }).then(() => {
-        isLoggedIn.value = true;
-        showLogin.value = false;
-        phone.value = '';
-        password.value = '';
-        confirmPassword.value = '';
-        ElMessage.success('登陆成功')
-      }).catch((error) => {
-        let res = error.response
-        ElMessage.error(res.data.error)
+      }).then((res) => {
+        if (res.data.code === '000') {
+          isLoggedIn.value = true;
+          showLogin.value = false;
+          phone.value = '';
+          password.value = '';
+          confirmPassword.value = '';
+          ElMessage.success('登陆成功')
+        } else if (res.data.code === '400'){
+          ElMessage.error(res.data.message)
+        }
       })
     }
 
@@ -95,19 +96,18 @@ export default defineComponent({
         phone: phone.value,
         password: password.value,
         confirmPassword: confirmPassword.value,
-      }).then(() => {
-        phone.value = '';
-        password.value = '';
-        confirmPassword.value = '';
-        showRegister.value = false;
-        showLogin.value = true;
-        ElMessage.success('注册成功，请返回登录')
+      }).then((res) => {
+        if (res.data.code === '000') {
+          phone.value = '';
+          password.value = '';
+          confirmPassword.value = '';
+          showRegister.value = false;
+          showLogin.value = true;
+          ElMessage.success('注册成功，请返回登录')
+        } else if (res.data.code === '400'){
+          ElMessage.error(res.data.message)
+        }
       })
-          .catch((error) => {
-            let res = error.response
-            console.log(res.data.error)
-            ElMessage.error(res.data.error)
-          })
 
     }
     const logout = () => {
@@ -158,24 +158,27 @@ export default defineComponent({
 </script>
 
 <template>
-  <header class="flex justify-between p-4 bg-blue-600 text-white text-xl">
-    <router-link to="/" class="logo" @click="() => {setCurrentPage('home')}">古诗词填空</router-link>
-    <nav class="flex items-center space-x-8 text-lg">
+  <header class="flex justify-between p-6 bg-[#6f1d1b] text-[#d0b28d] text-lg font-serif">
+    <router-link to="/" class="logo text-[#c8b68d] font-serif font-extrabold text-3xl" @click="() => { setCurrentPage('home') }">
+      古诗词填空
+    </router-link>
+
+    <nav class="flex items-center space-x-8 text-lg font-serif">
       <router-link to="/"
-                   class="px-4 py-2 transition duration-300 ease-in-out rounded hover:bg-blue-200 hover:text-blue-600 active:bg-blue-400 active:text-white"
-                   :class="{ 'font-bold bg-blue-500 text-white shadow-lg': currentPage === 'home' }"
+                   class="px-4 py-2 transition duration-300 ease-in-out rounded hover:bg-[#c8b68d] hover:text-[#6f1d1b] active:bg-[#a67c2f] active:text-white"
+                   :class="{ 'font-bold bg-[#c8b68d] text-[#6f1d1b] shadow-lg': currentPage === 'home' }"
                    @click="setCurrentPage('home')">
         首页
       </router-link>
       <router-link to="/poems"
-                   class="px-4 py-2 transition duration-300 ease-in-out rounded hover:bg-blue-200 hover:text-blue-600 active:bg-blue-400 active:text-white"
-                   :class="{ 'font-bold bg-blue-500 text-white shadow-lg': currentPage === 'poems' }"
+                   class="px-4 py-2 transition duration-300 ease-in-out rounded hover:bg-[#c8b68d] hover:text-[#6f1d1b] active:bg-[#a67c2f] active:text-white"
+                   :class="{ 'font-bold bg-[#c8b68d] text-[#6f1d1b] shadow-lg': currentPage === 'poems' }"
                    @click="setCurrentPage('poems')">
         诗词库
       </router-link>
       <router-link to="/about"
-                   class="px-4 py-2 transition duration-300 ease-in-out rounded hover:bg-blue-200 hover:text-blue-600 active:bg-blue-400 active:text-white"
-                   :class="{ 'font-bold bg-blue-500 text-white shadow-lg': currentPage === 'about' }"
+                   class="px-4 py-2 transition duration-300 ease-in-out rounded hover:bg-[#c8b68d] hover:text-[#6f1d1b] active:bg-[#a67c2f] active:text-white"
+                   :class="{ 'font-bold bg-[#c8b68d] text-[#6f1d1b] shadow-lg': currentPage === 'about' }"
                    @click="setCurrentPage('about')">
         关于
       </router-link>
@@ -189,33 +192,31 @@ export default defineComponent({
             class="h-9 rounded-full cursor-pointer hover:opacity-75 w-32"
             @click="toggleDropdown"
         />
-        <div v-if="showDropdown" class="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md z-10">
+        <div v-if="showDropdown" class="absolute right-0 mt-2 w-48 bg-[#f0e0b9] shadow-lg rounded-md z-10">
           <router-link to="/profile"
-                       class="block px-4 py-2 hover:bg-gray-200 text-gray-800 text-sm"
-                       @click="() => {toggleDropdown(); setCurrentPage('profile')}"
-          >
+                       class="block px-4 py-2 hover:bg-[#d7c08d] text-[#6f1d1b] text-sm font-serif"
+                       @click="() => { toggleDropdown(); setCurrentPage('profile') }">
             个人中心
           </router-link>
           <router-link to="/settings"
-                       class="block px-4 py-2 hover:bg-gray-200 text-gray-800 text-sm"
-                       @click="() => { toggleDropdown(); setCurrentPage('settings') }"
-          >
+                       class="block px-4 py-2 hover:bg-[#d7c08d] text-[#6f1d1b] text-sm font-serif"
+                       @click="() => { toggleDropdown(); setCurrentPage('settings') }">
             设置
           </router-link>
           <router-link to="/"
                        @click="() => { logout(); setCurrentPage('home'); }"
-                       class="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100 text-sm">
+                       class="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100 text-sm font-serif">
             退出登录
           </router-link>
         </div>
       </div>
-      <button v-else @click="showLoginPage" class="bg-yellow-500 px-4 py-2 rounded hover:bg-yellow-400 text-sm w-32">
+      <button v-else @click="showLoginPage" class="bg-[#7f4f2b] px-4 py-2 rounded hover:bg-[#634229] text-sm w-32 font-serif">
         登录/注册
       </button>
       <!-- 登录弹窗 -->
       <div v-if="showLogin" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-20">
         <!-- 弹窗内容 -->
-        <div class="bg-white w-96 p-6 rounded-lg shadow-xl transform transition-all duration-300 ease-in-out scale-95 hover:scale-100">
+        <div class="bg-white w-96 p-6 rounded-lg shadow-xl transform transition-all duration-300 ease-in-out scale-95">
           <h2 class="text-2xl font-semibold text-gray-700 mb-6 text-center">登录</h2>
           <form @submit.prevent="login">
             <div class="mb-4">
@@ -274,7 +275,7 @@ export default defineComponent({
       </div>
 
       <div v-if="showRegister" ref="registerMenu" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-20">
-        <div class="bg-white w-96 p-6 rounded-lg shadow-xl transform transition-all duration-300 ease-in-out scale-95 hover:scale-100">
+        <div class="bg-white w-96 p-6 rounded-lg shadow-xl transform transition-all duration-300 ease-in-out scale-95">
           <h2 class="text-2xl font-semibold text-gray-700 mb-6 text-center">注册</h2>
           <form @submit.prevent="register">
             <div class="mb-4">
@@ -368,14 +369,61 @@ header {
 .absolute {
   position: absolute;
 }
+
 .logo {
-  font-size: 2rem; /* 字体大小 */
-  font-weight: bold; /* 字体加粗 */
-  color: #4A90E2; /* 字体颜色 */
-  text-decoration: none; /* 去掉下划线 */
-  transition: color 0.3s ease; /* 颜色变化过渡效果 */
-  cursor: pointer; /* 鼠标悬停时显示为手型 */
+  font-family: 'Zhi Mang Xing', cursive;
+  color: #C8B68D; /* 暗金色字体 */
+  transition: color 0.3s ease;
 }
+
+/* 按钮样式 */
+button {
+  font-family: 'Zhi Mang Xing', cursive;
+  font-weight: bold;
+  color: white;
+  background-color: #7F4F2B; /* 深古铜色 */
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #634229; /* 悬停时变为更暗的古铜色 */
+}
+
+button:focus {
+  outline: none;
+}
+
+/* 导航栏链接 */
+nav a {
+  font-family: 'Zhi Mang Xing', cursive;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+nav a:hover {
+  background-color: #C8B68D; /* 悬停时背景色改为暗金色 */
+  color: #6F1D1B; /* 悬停时文字颜色改为深红色 */
+}
+
+nav a.active {
+  background-color: #A67C2F; /* 活动状态下的按钮颜色 */
+  color: white;
+}
+
+nav a:focus {
+  outline: none;
+}
+
+/* 水墨画风格背景 */
+body {
+  background-image: url('https://example.com/watercolor-background.png'); /* 更换为水墨画背景 */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
 /* 弹窗的背景遮罩样式 */
 .fixed {
   position: fixed;
