@@ -78,6 +78,8 @@ export default defineComponent({
           password.value = '';
           confirmPassword.value = '';
           ElMessage.success('登陆成功')
+          const token = res.data.result
+          sessionStorage.setItem('token', token)
         } else if (res.data.code === '400'){
           ElMessage.error(res.data.message)
         }
