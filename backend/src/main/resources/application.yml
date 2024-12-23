@@ -11,7 +11,7 @@ spring:
     username: root
 
     #这一行指定了 JPA（Java Persistence API）的相关配置。
-    password: root
+    password: 123456
   jpa:
     #这一行指定了 Hibernate 的相关配置。Hibernate 是一个流行的 Java ORM（对象关系映射）框架
     hibernate:
