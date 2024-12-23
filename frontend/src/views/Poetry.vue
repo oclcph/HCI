@@ -47,8 +47,11 @@
       </div>
     </div>
 
+    <button v-if="isReady" @click="check">确认</button>
+    <div v-if="isReady && isChecked">{{ message.message }}</div>
+
     <button
-        v-if="isReady"
+        v-if="isReady && isChecked"
         @click="nextSentence"
         class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
     >
@@ -80,6 +83,10 @@ interface Sentence {
   next: string;
 }
 
+interface Message {
+  status: string,
+  message: string;
+}
 const shuffleArray = <T>(array: T[]): T[] => {
   // 创建一个副本，避免修改原数组
   const arr = [...array];
@@ -358,14 +365,49 @@ export default defineComponent({
       words.value = []
       disturb.value = []
       disturbSentences.value = []
+      isChecked.value = false
+      input.value = ""
     }
 
     const selectedWords = ref<string[]>([]);
     const selectWord = (word: string) => {
-      if (!selectedWords.value.includes(word)) {
+      const index = selectedWords.value.indexOf(word);
+      if (index > -1) {
+        // 如果已经选中，则从数组中移除
+        selectedWords.value.splice(index, 1);
+      } else {
+        // 如果未选中，则添加到数组中
         selectedWords.value.push(word);
       }
     };
+
+
+    const message = ref<Message>({status: "", message: ""})
+    const isChecked = ref(false)
+    const check = () => {
+      if (currentProblem.value === "九宫格" || currentProblem.value === "十二宫格") {
+        input.value = selectedWords.value.join('')
+        if (input.value === displaySentence.value?.prev || input.value === displaySentence.value?.next){
+          message.value = {status: "success", message: "答对了，恭喜你！"}
+        } else {
+          message.value = {status: "failure", message: "答错了，真可惜。"}
+        }
+      } else if (currentProblem.value === "上句空") {
+        if (input.value === displaySentence.value?.prev) {
+          message.value = {status: "success", message: "答对了，恭喜你！"}
+        } else {
+          message.value = {status: "failure", message: "答错了，真可惜。"}
+        }
+      } else if (currentProblem.value === "下句空") {
+        if (input.value === displaySentence.value?.next) {
+          message.value = {status: "success", message: "答对了，恭喜你！"}
+        } else {
+          message.value = {status: "failure", message: "答错了，真可惜。"}
+        }
+      }
+      isChecked.value = true;
+      console.log(message.value)
+    }
 
     const input = ref<string>()
     onMounted(() => {
@@ -385,9 +427,12 @@ export default defineComponent({
       currentProblem,
       gridClass,
       selectedWords,
+      isChecked,
+      message,
       selectWord,
       getPoetryList,
       nextSentence,
+      check,
     };
   }
 });
