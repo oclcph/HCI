@@ -5,19 +5,19 @@
       <p class="subtitle">请选择一个模式开始尝试</p>
     </header>
     <div class="container">
-      <div class="item small bg-white shadow-lg rounded-lg overflow-hidden cursor-pointer transition-transform transform hover:-translate-y-1" @click="handleClick('简单模式')">
+      <div class="item small bg-white shadow-lg rounded-lg overflow-hidden cursor-pointer transition-transform transform hover:-translate-y-1" @click="handleClick('LOW')">
         <div class="item-content">
           <h2 class="cta">简单模式</h2>
         </div>
         <img src="../assets/l3.jpg" alt="模式1" class="item-image" />
       </div>
-      <div class="item small bg-white shadow-lg rounded-lg overflow-hidden cursor-pointer transition-transform transform hover:-translate-y-1" @click="handleClick('中等模式')">
+      <div class="item small bg-white shadow-lg rounded-lg overflow-hidden cursor-pointer transition-transform transform hover:-translate-y-1" @click="handleClick('MID')">
         <div class="item-content">
           <h2 class="cta">中等模式</h2>
         </div>
         <img src="../assets/l4.jpg" alt="模式2" class="item-image" />
       </div>
-      <div class="item small bg-white shadow-lg rounded-lg overflow-hidden cursor-pointer transition-transform transform hover:-translate-y-1" @click="handleClick('困难模式')">
+      <div class="item small bg-white shadow-lg rounded-lg overflow-hidden cursor-pointer transition-transform transform hover:-translate-y-1" @click="handleClick('HIGH')">
         <div class="item-content p-6">
           <h2 class="cta">困难模式</h2>
         </div>
@@ -44,9 +44,23 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
+import {useRouter} from "vue-router";
+import axios from "axios";
+import {getPoetry} from "../api/poetry";
+
 export default defineComponent({
-  name: 'HomePage'
+  name: 'HomePage',
+  setup(){
+    const router = useRouter();
+    const handleClick = (level: string) => {
+      router.push({path: `/poetry`, query: {level: level}});
+    };
+    return {
+      handleClick,
+    };
+  }
 })
+
 </script>
 
 <style scoped>

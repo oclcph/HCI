@@ -15,6 +15,7 @@
 import {onMounted} from "vue";
 import {getPoetry} from "../api/poetry";
 import { defineComponent, ref } from 'vue';
+import {useRoute, useRouter} from 'vue-router'
 
 interface Poetry {
   id: number;
@@ -27,12 +28,33 @@ interface Poetry {
 }
 
 export default defineComponent({
-  name:'Level',
-  setup(){
-    const poetry = ref<Poetry[]>([]);
+  name: 'Poetry',
+  setup() {
+    const route = useRoute();
+    const router = useRouter(); // 获取路由实例
+
+    const level = ref(route.query.level as string); // 确保 level 是字符串类型
+    const size = ref(5)
+    const poetry = ref<Poetry[]>([]); // 确保 Poetry 类型已定义
+
+    const getPoetryList = (level: string, size: number) => {
+      getPoetry(level, size).then(res => {
+        if (res.data.code === '000') {
+          poetry.value = res.data.result;
+          console.log(poetry.value);
+        }
+      });
+    };
+
+    onMounted(() => {
+      router.replace({ query: {} });
+      getPoetryList(level.value, size.value); // 使用 level.value 作为参数
+    });
+
     return {
       poetry,
-    }
+      getPoetryList,
+    };
   }
 });
 
