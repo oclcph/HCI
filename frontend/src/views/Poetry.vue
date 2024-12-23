@@ -35,15 +35,15 @@
             class="flex items-center justify-center w-16 h-16 bg-gray-200 border border-gray-300 rounded cursor-pointer hover:bg-gray-300"
             v-for="(word, index) in words"
             :key="index"
-            @click="selectWord(word)"
-            :class="{ 'bg-green-300': selectedWords.includes(word) }"
+            @click="selectWord(index)"
+            :class="{ 'bg-green-300': selectedIndexes.includes(index) }"
         >
           {{ word }}
         </div>
       </div>
 
-      <div class="mt-4 text-lg" v-if="selectedWords.length > 0">
-        选中的字: {{ selectedWords.join(' ') }}
+      <div class="mt-4 text-lg" v-if="selectedIndexes.length > 0">
+        选中的字: {{ selectedIndexes.map(index => words[index]).join(' ') }}
       </div>
     </div>
 
@@ -231,12 +231,21 @@ export default defineComponent({
 
         // 检查并重置索引
         if (currentIndex.value[0] >= poetryFive.value.length) {
+          const res = await getDifferentPoetry(level.value, "FIVE_WORDS", size.value)
+          if (res.data.code === '000')
+            poetryFive.value = res.data.result
           currentIndex.value[0] = 0;
         }
         if (currentIndex.value[1] >= poetrySeven.value.length) {
+          const res = await getDifferentPoetry(level.value, "SEVEN_WORDS", size.value)
+          if (res.data.code === '000')
+            poetrySeven.value = res.data.result
           currentIndex.value[1] = 0;
         }
         if (currentIndex.value[2] >= poetryOther.value.length) {
+          const res = await getDifferentPoetry(level.value, "OTHERS", size.value)
+          if (res.data.code === '000')
+            poetryOther.value = res.data.result
           currentIndex.value[2] = 0;
         }
       } catch (error) {
@@ -250,7 +259,7 @@ export default defineComponent({
       if (currentPoetry.value) {
         let random_offset = Math.floor(Math.random() * 171);
         let newid = currentPoetry.value.id + random_offset;
-        if (currentPoetry.value.id > 172) {
+        if (newid > 172) {
           newid -= 172;
         }
         try {
@@ -275,12 +284,14 @@ export default defineComponent({
       disturb.value.forEach(dist => {
         let wordset = Array.from(dist.prev)
         wordset.forEach(word => {
-          disturbSentences.value.push(word)
+          if (word !== "." && word !== "。" && word !== "?" && word !== "？" && word !== "，" && word !== "," && word !== " ")
+            disturbSentences.value.push(word)
         })
         if (dist.next){
           wordset = Array.from(dist.next)
           wordset.forEach(word => {
-            disturbSentences.value.push(word)
+            if (word !== "." && word !== "。" && word !== "?" && word !== "？" && word !== "，" && word !== "," && word !== " ")
+              disturbSentences.value.push(word)
           })
         }
       })
@@ -361,7 +372,7 @@ export default defineComponent({
 
     const nextSentence = () => {
       display();
-      selectedWords.value = []
+      selectedIndexes.value = []
       words.value = []
       disturb.value = []
       disturbSentences.value = []
@@ -369,15 +380,15 @@ export default defineComponent({
       input.value = ""
     }
 
-    const selectedWords = ref<string[]>([]);
-    const selectWord = (word: string) => {
-      const index = selectedWords.value.indexOf(word);
-      if (index > -1) {
-        // 如果已经选中，则从数组中移除
-        selectedWords.value.splice(index, 1);
+    const selectedIndexes = ref<number[]>([]);
+    const selectWord = (index: number) => {
+      const idx = selectedIndexes.value.indexOf(index);
+      if (idx > -1) {
+        // 如果已经选中，则从数组中移除该索引
+        selectedIndexes.value.splice(idx, 1);
       } else {
-        // 如果未选中，则添加到数组中
-        selectedWords.value.push(word);
+        // 如果未选中，则添加该索引
+        selectedIndexes.value.push(index);
       }
     };
 
@@ -386,7 +397,7 @@ export default defineComponent({
     const isChecked = ref(false)
     const check = () => {
       if (currentProblem.value === "九宫格" || currentProblem.value === "十二宫格") {
-        input.value = selectedWords.value.join('')
+        input.value = selectedIndexes.value.map(index => words.value[index]).join('')
         if (input.value === displaySentence.value?.prev || input.value === displaySentence.value?.next){
           message.value = {status: "success", message: "答对了，恭喜你！"}
         } else {
@@ -426,7 +437,7 @@ export default defineComponent({
       words,
       currentProblem,
       gridClass,
-      selectedWords,
+      selectedIndexes,
       isChecked,
       message,
       selectWord,
