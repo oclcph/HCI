@@ -5,10 +5,12 @@ import com.example.hci.enums.PoetryTypeEnum;
 import com.example.hci.exception.HCIException;
 import com.example.hci.po.Poetry;
 import com.example.hci.repository.PoetryRepository;
+import com.example.hci.repository.SentenceRepository;
 import com.example.hci.service.PoetryService;
 import com.example.hci.vo.GridContentVO;
 import com.example.hci.vo.GridRequest;
 import com.example.hci.vo.PoetryVO;
+import com.example.hci.vo.SentenceVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,12 +20,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
+import com.example.hci.po.Sentence;
 @Service
 public class PoetryServiceImpl implements PoetryService {
     @Autowired
     PoetryRepository poetryRepository;
-
+    @Autowired
+    SentenceRepository sentenceRepository;
     @Override
     public PoetryVO getPoetry(Long id) {
         Poetry poetry = poetryRepository.findById(id).orElse(null);
@@ -43,6 +46,13 @@ public class PoetryServiceImpl implements PoetryService {
     public List<PoetryVO> getPoetryByLevelAndType(PoetryLevelEnum level, PoetryTypeEnum type, Integer size) {
         List<Poetry> poetryList = poetryRepository.findByLevelAndType(level, type);
         return getRandomPoetryList(poetryList, size);
+    }
+
+    @Override
+    public List<SentenceVO> getPoetrySentence(Long id) {
+        return  sentenceRepository.findByPoetryId(id).stream()
+                .map(Sentence::toVO)
+                .collect(Collectors.toList());
     }
 
 //    @Override
