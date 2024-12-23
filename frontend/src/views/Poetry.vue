@@ -1,31 +1,43 @@
 <template>
-  <<div class="flex flex-col items-center justify-center h-screen relative overflow-hidden">
-  <transition name="fade" mode="out-in">
-    <div v-if="!isReady" key="intro" class="absolute inset-0 flex flex-col items-center justify-center text-5xl font-bold text-center text-gray-800 bg-transparent">
-      <div class="animate-fadeIn artistic-text">{{ counttext }}</div>
-    </div>
-  </transition>
+  <div class="flex flex-col items-center justify-center h-screen relative overflow-hidden">
+    <transition name="fade" mode="out-in">
+      <div v-if="!isReady" key="intro" class="absolute inset-0 flex flex-col items-center justify-center text-5xl font-bold text-center text-gray-800 bg-transparent">
+        <div class="animate-fadeIn artistic-text">{{ counttext }}</div>
+      </div>
+    </transition>
 
-  <transition name="fade" mode="out-in">
-    <div v-if="isReady && displaySentence" :key="displaySentence.id" class="p-4 border rounded-lg shadow-lg transition-transform transform bg-white max-w-md mx-auto">
-      <h2 class="text-lg font-bold">{{ displaySentence.prev }}</h2>
-      <p class="text-gray-700 text-base">{{ displaySentence.next }}</p>
-    </div>
-  </transition>
+    <div class="flex flex-col items-center p-4">
+      <!-- 仅在 currentProblem 为 '九宫格' 或 '十二宫格' 时显示网格 -->
+      <div v-if="currentProblem === '九宫格' || currentProblem === '十二宫格'" :class="gridClass">
+        <div
+            class="flex items-center justify-center w-16 h-16 bg-gray-200 border border-gray-300 rounded cursor-pointer hover:bg-gray-300"
+            v-for="word in words"
+            :key="word"
+            @click="selectWord(word)"
+            :class="{ 'bg-green-300': selectedWords.includes(word) }"
+        >
+          {{ word }}
+        </div>
+        <div class="mt-4 text-lg" v-if="selectedWords.length > 0">
+          选中的字: {{ selectedWords.join(' ') }}
+        </div>
+      </div>
 
-  <button
-      v-if="isReady"
-      @click="nextSentence"
-      class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-  >
-    下一首诗歌
-  </button>
-</div>
+    </div>
+
+    <button
+        v-if="isReady"
+        @click="nextSentence"
+        class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+    >
+      下一首诗歌
+    </button>
+  </div>
 </template>
 
 <script lang="ts">
-import {onMounted} from "vue";
-import { getPoetry, getSentence, getDifferentPoetry } from "../api/poetry";
+import {computed, onMounted} from "vue";
+import { getSentence, getDifferentPoetry } from "../api/poetry";
 import { defineComponent, ref } from 'vue';
 import {useRoute, useRouter} from 'vue-router'
 import {ElMessage} from "element-plus";
@@ -44,6 +56,30 @@ interface Sentence {
   id: number;
   prev: string;
   next: string;
+}
+
+const shuffleArray = <T>(array: T[]): T[] => {
+  // 创建一个副本，避免修改原数组
+  const arr = [...array];
+
+  for (let i = arr.length - 1; i > 0; i--) {
+    // 生成一个 0 到 i 之间的随机数
+    const j = Math.floor(Math.random() * (i + 1));
+
+    // 交换元素
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+
+  return arr;
+};
+
+// 从数组中随机取n个元素
+function getRandomElements<T>(array: T[], n: number): T[] {
+  // 创建数组的副本
+  const arr = shuffleArray(array);
+
+  // 选择前 n 个元素
+  return arr.slice(0, n);
 }
 
 export default defineComponent({
@@ -71,18 +107,22 @@ export default defineComponent({
     const countdown = ref(6); // 倒计时初始值
     const counttext = ref('准备好了吗？');
 
+    const gridClass = computed(() => {
+      if (currentProblem.value === '九宫格')
+        return 'grid grid-cols-3 gap-4'
+      else if (currentProblem.value === '十二宫格')
+        return 'grid grid-cols-4 gap-4'
+    });
+
     const getPoetryList = (level: string, type:string, size: number) => {
       getDifferentPoetry(level, type, size).then(res => {
         if (res.data.code === '000') {
           if (type === "FIVE_WORDS") {
             poetryFive.value = res.data.result;
-            console.log(poetryFive.value);
           } else if (type === "SEVEN_WORDS"){
             poetrySeven.value = res.data.result;
-            console.log(poetrySeven.value);
           } else{
             poetryOther.value = res.data.result;
-            console.log(poetryOther.value);
           }
         } else if (res.data.code === '400'){
           ElMessage.error(res.data.message)
@@ -97,14 +137,11 @@ export default defineComponent({
         const res = await getSentence(id);
         if (res.data.code === '000') {
           sentences.value = res.data.result;
-          console.log(res.data.result);
-          ElMessage.success("成功");
         } else if (res.data.code === '400') {
           ElMessage.error(res.data.message);
         }
       } catch (error) {
         ElMessage.error("获取句子失败");
-        console.error(error);
       }
     };
 
@@ -126,13 +163,12 @@ export default defineComponent({
       currentType.value = types.value[randomIndex]
     }
 
-    const updateCurrentSentence = (id: number) => {
-      getSentenceList(id).then(() => {
-        selectRandomSentence();
-      });
+    const updateCurrentSentence = async (id: number) => {
+      await getSentenceList(id)
+      selectRandomSentence();
     };
 
-    const getPoetryId = async () => {
+    const getPoetry = async () => {
       try {
         await selectRandomProblem(); // 等待随机问题选择完成
 
@@ -168,8 +204,101 @@ export default defineComponent({
           currentIndex.value[2] = 0;
         }
       } catch (error) {
-        console.error("获取诗歌失败:", error);
         ElMessage.error("获取诗歌失败");
+      }
+    };
+
+    // 将得到的句子分割成单个字
+    const disturb = ref<Sentence[]>([])
+    const getDisturb = async () => {
+      if (currentPoetry.value) {
+        let random_offset = Math.floor(Math.random() * 171);
+        let newid = currentPoetry.value.id + random_offset;
+        if (currentPoetry.value.id > 172) {
+          newid -= 172;
+        }
+        try {
+          const res = await getSentence(newid);
+          if (res.data.code === '000') {
+            disturb.value = res.data.result;
+          } else {
+            ElMessage.error("获取干扰项请求出错");
+          }
+        } catch (error) {
+          ElMessage.error("请求失败");
+        }
+      } else {
+        ElMessage.error("getDisturb中currentPoetry为空");
+      }
+    };
+
+    // 从干扰项中选择随机一句诗
+    const disturbSentences = ref<string[]>([])
+    const getDisturbSet = async () => {
+      await getDisturb();
+      disturb.value.forEach(dist => {
+        let wordset = Array.from(dist.prev)
+        wordset.forEach(word => {
+          disturbSentences.value.push(word)
+        })
+        if (dist.next){
+          wordset = Array.from(dist.next)
+          wordset.forEach(word => {
+            disturbSentences.value.push(word)
+          })
+        }
+      })
+
+    }
+
+    // 九宫格/十二宫格的待选字
+    const words = ref<string[]>([])
+    const getWords = async () => {
+      if (displaySentence.value) {
+        const randomIndex = Math.floor(Math.random() * 2);
+        if (randomIndex == 0 || displaySentence.value.next == null) {
+          words.value = Array.from(displaySentence.value.prev)
+        } else {
+          words.value = Array.from(displaySentence.value.next);
+        }
+
+        let disturbNum = 0;
+        // 根据题型判断干扰项的选择
+        // 从下一首诗中选几个字作为干扰项
+        if (currentProblem.value === "九宫格") {
+          disturbNum = 4
+        } else if (currentProblem.value === "十二宫格")
+          disturbNum = 5
+        await getDisturbSet();
+
+        const randomWords = getRandomElements(disturbSentences.value, disturbNum)
+        randomWords.forEach(randomWord => {
+          words.value.push(randomWord)
+        });
+        console.log(words.value)
+        words.value = shuffleArray(words.value)
+      }
+    }
+
+    const display = async () => {
+      try {
+        await getPoetry();
+
+        if (currentPoetry.value) {
+          console.log(currentProblem.value);  // 输出当前题型
+
+          await updateCurrentSentence(currentPoetry.value.id);
+
+          console.log(displaySentence.value);  // 输出更新后的 displaySentence
+          if (currentProblem.value === "九宫格" || currentProblem.value === "十二宫格") {
+            await getWords();  // 等待获取词语
+            console.log(words.value)
+          }
+        } else {
+          ElMessage.error("未选中诗歌");
+        }
+      } catch (error) {
+        console.error("发生错误:", error);
       }
     };
 
@@ -189,21 +318,14 @@ export default defineComponent({
         } else {
           clearInterval(interval);
           isReady.value = true; // 倒计时结束，显示诗歌
-          getPoetryId().then(() => {
-            console.log(currentPoetry.value);
-            if (currentPoetry.value) {
-              updateCurrentSentence(currentPoetry.value.id);
-            } else {
-              ElMessage.error("未选中诗歌");
-            }
-          });
+          display()
         }
       }, 1000); // 每秒减1
     };
 
+
     const nextSentence = () => {
-      getPoetryId().then(() => {
-        console.log(currentPoetry.value);
+      getPoetry().then(() => {
         if (currentPoetry.value) {
           updateCurrentSentence(currentPoetry.value.id);
         } else {
@@ -211,6 +333,13 @@ export default defineComponent({
         }
       });
     }
+
+    const selectedWords = ref<string[]>([]);
+    const selectWord = (word: string) => {
+      if (!selectedWords.value.includes(word)) {
+        selectedWords.value.push(word);
+      }
+    };
 
     onMounted(() => {
       router.replace({ query: {} });
@@ -224,6 +353,11 @@ export default defineComponent({
       isReady,
       counttext,
       displaySentence,
+      words,
+      currentProblem,
+      gridClass,
+      selectedWords,
+      selectWord,
       getPoetryList,
       nextSentence,
     };
