@@ -3,10 +3,7 @@ package com.example.hci.controller;
 import com.example.hci.enums.PoetryLevelEnum;
 import com.example.hci.enums.PoetryTypeEnum;
 import com.example.hci.service.PoetryService;
-import com.example.hci.vo.GridContentVO;
-import com.example.hci.vo.GridRequest;
-import com.example.hci.vo.PoetryVO;
-import com.example.hci.vo.ResultVO;
+import com.example.hci.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +19,11 @@ public class PoetryController {
     public ResultVO<PoetryVO> getPoetry(@PathVariable(value = "id") Long id) {
         return ResultVO.buildSuccess(poetryService.getPoetry(id));
     }
+    @GetMapping("/{id}/sentence")
+    public ResultVO<List<SentenceVO>> getPoetrySentence(@PathVariable(value = "id") Long id) {
+        return ResultVO.buildSuccess(poetryService.getPoetrySentence(id));
+    }
+
 
     @GetMapping("/level") // 通过诗歌等级获取指定数量的诗歌,随机打乱过了
     public ResultVO<List<PoetryVO>> getPoetryByLevel(@RequestParam("level") PoetryLevelEnum level, @RequestParam("size") Integer size) {
