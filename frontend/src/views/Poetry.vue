@@ -7,22 +7,44 @@
     </transition>
 
     <div class="flex flex-col items-center p-4">
-      <!-- 仅在 currentProblem 为 '九宫格' 或 '十二宫格' 时显示网格 -->
-      <div v-if="currentProblem === '九宫格' || currentProblem === '十二宫格'" :class="gridClass">
+      <!-- 根据 currentProblem 显示内容 -->
+      <div v-if="currentProblem === '上句空'" class="flex flex-col items-center">
+        <input
+            v-model="input"
+            class="mb-4 p-2 border border-gray-300 rounded"
+            placeholder="请输入上半句"
+        />
+        <div class="text-lg">
+          下半句: {{ displaySentence?.next }}
+        </div>
+      </div>
+
+      <div v-if="currentProblem === '下句空'" class="flex flex-col items-center">
+        <div class="text-lg">
+          上半句: {{ displaySentence?.prev }}
+        </div>
+        <input
+            v-model="input"
+            class="mb-4 p-2 border border-gray-300 rounded"
+            placeholder="请输入下半句"
+        />
+      </div>
+
+      <div v-else-if="currentProblem === '九宫格' || currentProblem === '十二宫格'" :class="gridClass">
         <div
             class="flex items-center justify-center w-16 h-16 bg-gray-200 border border-gray-300 rounded cursor-pointer hover:bg-gray-300"
-            v-for="word in words"
-            :key="word"
+            v-for="(word, index) in words"
+            :key="index"
             @click="selectWord(word)"
             :class="{ 'bg-green-300': selectedWords.includes(word) }"
         >
           {{ word }}
         </div>
-        <div class="mt-4 text-lg" v-if="selectedWords.length > 0">
-          选中的字: {{ selectedWords.join(' ') }}
-        </div>
       </div>
 
+      <div class="mt-4 text-lg" v-if="selectedWords.length > 0">
+        选中的字: {{ selectedWords.join(' ') }}
+      </div>
     </div>
 
     <button
@@ -147,8 +169,15 @@ export default defineComponent({
 
     // 选择随机一句诗
     const selectRandomSentence = () => {
-      const randomIndex = Math.floor(Math.random() * sentences.value.length);
-      displaySentence.value = sentences.value[randomIndex];
+      if (currentProblem.value === "九宫格" || currentProblem.value === "十二宫格") {
+        const randomIndex = Math.floor(Math.random() * sentences.value.length);
+        displaySentence.value = sentences.value[randomIndex];
+      } else {
+        do {
+          const randomIndex = Math.floor(Math.random() * sentences.value.length);
+          displaySentence.value = sentences.value[randomIndex];
+        } while(displaySentence.value?.next == null)
+      }
     };
 
     // 随机选择一个题型
@@ -248,7 +277,6 @@ export default defineComponent({
           })
         }
       })
-
     }
 
     // 九宫格/十二宫格的待选字
@@ -325,13 +353,11 @@ export default defineComponent({
 
 
     const nextSentence = () => {
-      getPoetry().then(() => {
-        if (currentPoetry.value) {
-          updateCurrentSentence(currentPoetry.value.id);
-        } else {
-          ElMessage.error("未选中诗歌");
-        }
-      });
+      display();
+      selectedWords.value = []
+      words.value = []
+      disturb.value = []
+      disturbSentences.value = []
     }
 
     const selectedWords = ref<string[]>([]);
@@ -341,6 +367,7 @@ export default defineComponent({
       }
     };
 
+    const input = ref<string>()
     onMounted(() => {
       router.replace({ query: {} });
       types.value.forEach(type => {
@@ -350,6 +377,7 @@ export default defineComponent({
     });
 
     return {
+      input,
       isReady,
       counttext,
       displaySentence,
