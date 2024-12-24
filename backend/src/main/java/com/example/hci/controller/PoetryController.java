@@ -23,6 +23,22 @@ public class PoetryController {
     public ResultVO<List<SentenceVO>> getPoetrySentence(@PathVariable(value = "id") Long id) {
         return ResultVO.buildSuccess(poetryService.getPoetrySentence(id));
     }
+    @PostMapping("/{id}/fav")
+    public ResultVO<Boolean> addToFav(@PathVariable(value = "id") Long id){
+        return ResultVO.buildSuccess( poetryService.favPoetry(id));
+    }
+    @PostMapping("/{id}/unfav")
+    public ResultVO<Boolean> removeFromFav(@PathVariable(value = "id") Long id){
+        return ResultVO.buildSuccess( poetryService.unfavPoetry(id));
+    }
+    @GetMapping("/fav/get")
+    public ResultVO<List<PoetryVO>> getFavPoetry(){
+        return ResultVO.buildSuccess(poetryService.getFavPoetry());
+    }
+    @GetMapping("/search")
+    public ResultVO<List<PoetryVO>> searchPoetry(@RequestParam("keyword") String keyword){
+        return ResultVO.buildSuccess(poetryService.searchPoetry(keyword));
+    }
 
 
     @GetMapping("/level") // 通过诗歌等级获取指定数量的诗歌,随机打乱过了
@@ -34,6 +50,8 @@ public class PoetryController {
     public ResultVO<List<PoetryVO>> getPoetryByLevelAndType(@RequestParam("level") PoetryLevelEnum level, @RequestParam("type") PoetryTypeEnum type, @RequestParam("size") Integer size) {
         return ResultVO.buildSuccess(poetryService.getPoetryByLevelAndType(level, type, size));
     }
+
+
 
 //    @GetMapping("/grid")
 //    public ResultVO<GridContentVO> getGridContent(@RequestBody GridRequest gridRequest){

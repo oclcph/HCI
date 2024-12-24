@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -35,6 +36,11 @@ public class User {
     @Column(name = "create_time")
     private Date createTime;
 
+    @ElementCollection
+    private List<Long> favPoetry;
+
+
+
     public UserVO toVO(){
         UserVO userVO = new UserVO();
         userVO.setId(id);
@@ -42,6 +48,7 @@ public class User {
         userVO.setPhone(phone);
         userVO.setPassword(password);
         userVO.setCreateTime(createTime);
+        userVO.setFavPoetry(favPoetry);
         return userVO;
     }
 }
