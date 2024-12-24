@@ -13,4 +13,6 @@ public interface PoetryRepository extends JpaRepository<Poetry, Long> {
     List<Poetry> findByLevel(PoetryLevelEnum level);
 
     List<Poetry> findByLevelAndType(PoetryLevelEnum level, PoetryTypeEnum type);
+
+    List<Poetry> findByIdIn(List<Long> favPoetry);
 }

@@ -4,13 +4,13 @@ import com.example.hci.enums.PoetryLevelEnum;
 import com.example.hci.enums.PoetryTypeEnum;
 import com.example.hci.exception.HCIException;
 import com.example.hci.po.Poetry;
+import com.example.hci.po.User;
 import com.example.hci.repository.PoetryRepository;
 import com.example.hci.repository.SentenceRepository;
+import com.example.hci.repository.UserRepository;
 import com.example.hci.service.PoetryService;
-import com.example.hci.vo.GridContentVO;
-import com.example.hci.vo.GridRequest;
-import com.example.hci.vo.PoetryVO;
-import com.example.hci.vo.SentenceVO;
+import com.example.hci.util.SecurityUtil;
+import com.example.hci.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,6 +27,10 @@ public class PoetryServiceImpl implements PoetryService {
     PoetryRepository poetryRepository;
     @Autowired
     SentenceRepository sentenceRepository;
+    @Autowired
+    UserRepository userRepository;
+    @Autowired
+    SecurityUtil securityUtil;
     @Override
     public PoetryVO getPoetry(Long id) {
         Poetry poetry = poetryRepository.findById(id).orElse(null);
@@ -52,6 +56,41 @@ public class PoetryServiceImpl implements PoetryService {
     public List<SentenceVO> getPoetrySentence(Long id) {
         return  sentenceRepository.findByPoetryId(id).stream()
                 .map(Sentence::toVO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Boolean favPoetry(Long id) {
+        User user = securityUtil.getCurrentUser();
+        Poetry poetry = poetryRepository.findById(id).orElse(null);
+        if(user.getFavPoetry().contains(id)){
+            throw HCIException.DIYException("已经收藏过了");
+        }
+        if (poetry == null) {
+            throw HCIException.DIYException("诗歌不存在");
+        }
+        user.getFavPoetry().add(id); // 添加到收藏夹中
+        userRepository.save(user);
+        return true;
+    }
+    @Override
+    public Boolean unfavPoetry(Long id) {
+        User user = securityUtil.getCurrentUser();
+        Poetry poetry = poetryRepository.findById(id).orElse(null);
+        if (poetry == null) {
+            return false; // 如果诗歌不存在，返回失败
+        }
+        user.getFavPoetry().remove(id); // 从收藏夹中移除
+        userRepository.save(user);
+        return true;
+    }
+
+    @Override
+    public List<PoetryVO> getFavPoetry() {
+        User user = securityUtil.getCurrentUser();
+        List<Poetry> poetryList = poetryRepository.findByIdIn(user.getFavPoetry());
+        return poetryList.stream()
+                .map(Poetry::toVO)
                 .collect(Collectors.toList());
     }
 
