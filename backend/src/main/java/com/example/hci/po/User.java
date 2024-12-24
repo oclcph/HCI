@@ -39,6 +39,9 @@ public class User {
     @ElementCollection
     private List<Long> favPoetry;
 
+    @ElementCollection
+    private List<Double> correctRate;
+
 
 
     public UserVO toVO(){

@@ -10,5 +10,8 @@ public interface UserService {
 
     UserVO getInformation();
 
+    Boolean addCorrectRate(Double rate);
+
+
 //    Boolean updateInformation(UserVO userVO);
 }
