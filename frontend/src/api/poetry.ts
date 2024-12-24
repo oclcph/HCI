@@ -20,3 +20,7 @@ export const addToFavorite = (id: number) => {
 export const getFavorite = () => {
     return axios.get(`${POETRY_MODULE}/fav/get`);
 }
+
+export const deleteFavorite = (id: number) => {
+    return axios.post(`${POETRY_MODULE}/${id}/unfav`);
+}

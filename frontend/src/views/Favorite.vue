@@ -1,6 +1,6 @@
 <script lang="ts">
 import {defineComponent, onMounted, ref} from "vue";
-import {getFavorite} from "../api/poetry";
+import {getFavorite, deleteFavorite} from "../api/poetry";
 import {Poetry} from "./Poetry.vue";
 import {ElMessage} from "element-plus";
 
@@ -29,6 +29,22 @@ export default defineComponent({
       expandedPoems.value[index] =!expandedPoems.value[index];
     };
 
+    const removePoem = async (index: number) => {
+      try {
+        const removeId = poems.value[index].id
+        const res = await deleteFavorite(removeId);
+        if (res.data.code === '000') {
+          poems.value.splice(index, 1);
+          delete expandedPoems.value[index];
+          ElMessage.success("删除成功")
+        } else if (res.data.code === '400') {
+          ElMessage.error(res.data.message);
+        }
+      } catch (error) {
+        ElMessage.error("删除失败")
+      }
+    }
+
     onMounted(() => {
       getAllFavorite();
     })
@@ -37,6 +53,7 @@ export default defineComponent({
       poems,
       expandedPoems,
       togglePoem,
+      removePoem
     };
   },
 })
@@ -45,7 +62,7 @@ export default defineComponent({
 
 <template>
   <div class="poems p-5">
-    <h1 class="text-3xl font-extrabold mb-6 text-center text-black animate-fade-in delay-200">诗词列表</h1>
+    <h1 class="text-3xl font-extrabold mb-6 text-center text-black animate-fade-in delay-200">收藏列表</h1>
     <ul class="list-disc pl-5 space-y-4 max-w-xl mx-auto animate-fade-in delay-400">
       <li
           v-for="(poem, index) in poems"
@@ -60,6 +77,9 @@ export default defineComponent({
         <transition name="slide">
           <div v-if="expandedPoems[index]" class="mt-4 text-gray-700">
             <p>{{ poem.content }}</p>
+            <button @click.stop="removePoem(index)" class="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition">
+              取消收藏
+            </button>
           </div>
         </transition>
       </li>
