@@ -117,6 +117,7 @@ export default defineComponent({
       console.log(userStore.isLoggedIn);
       isLoggedIn.value = false;
       showDropdown.value = false; // 登出时隐藏下拉框
+      sessionStorage.setItem('token', '')
     };
 
     const setCurrentPage = (page: string) => {
@@ -206,7 +207,7 @@ export default defineComponent({
             设置
           </router-link>
           <router-link to="/"
-                       @click="() => { logout(); setCurrentPage('home'); }"
+                       @click="() => { logout(); setCurrentPage('home');}"
                        class="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100 text-sm font-serif">
             退出登录
           </router-link>

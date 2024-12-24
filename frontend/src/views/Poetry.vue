@@ -75,7 +75,7 @@
               v-if="!isChecked && isReady"
               :disabled="!skip || isChecked"
               @click="handleSkip"
-              class="px-6 py-2 text-lg font-semibold rounded bg-yellow-700 text-white hover:bg-yellow-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition border border-yellow-900 mr-16"
+              class="px-6 py-2 text-lg font-semibold rounded-lg bg-yellow-700 text-white hover:bg-yellow-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition mr-16"
           >
             跳过
           </button>
@@ -87,18 +87,22 @@
 
         <!-- 确认按钮或下一首诗歌按钮 -->
         <div>
+          <button @click="addFavorite"
+                  class="px-4 py-2 text-lg font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition shadow-md mr-4">
+            收藏
+          </button>
           <button
               v-if="!isChecked && isReady"
               :disabled="!canCheck"
               @click="check"
-              class="px-6 py-2 text-lg font-semibold rounded bg-green-700 text-white hover:bg-green-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition border border-green-900 ml-16"
+              class="px-6 py-2 text-lg font-semibold rounded-lg bg-green-700 text-white hover:bg-green-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition ml-12"
           >
             确认
           </button>
           <button
               v-else
               @click="nextSentence"
-              class="px-6 py-2 text-lg font-semibold rounded hover:bg-opacity-80 transition"
+              class="px-6 py-2 text-lg font-semibold rounded-lg hover:bg-opacity-80 transition ml-12"
               :class="{
             'bg-green-700 text-white border-green-900': message.status === 'success',
             'bg-red-700 text-white border-red-900': message.status === 'failure'
@@ -108,15 +112,13 @@
           </button>
         </div>
       </div>
-
-
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import {computed, onMounted} from "vue";
-import { getSentence, getDifferentPoetry } from "../api/poetry";
+import { getSentence, getDifferentPoetry, addToFavorite } from "../api/poetry";
 import { defineComponent, ref } from 'vue';
 import {useRoute, useRouter} from 'vue-router'
 import {ElMessage} from "element-plus";
@@ -516,6 +518,28 @@ export default defineComponent({
       startCountdown(); // 开始倒计时
     });
 
+    // 添加收藏
+    const favoriteMessage = ref<Message>({status:"", message: ""})
+    const addFavorite = async () => {
+      try{
+        if (currentPoetry.value) {
+          const res = await addToFavorite(currentPoetry.value.id);
+          if (res.data.code === '000') {
+            favoriteMessage.value.status = "success";
+            favoriteMessage.value.message = "收藏成功，请在收藏中心查看";
+            ElMessage.success(favoriteMessage.value.message);
+          } else if (res.data.code === '400'){
+            favoriteMessage.value.status = "failure";
+            favoriteMessage.value.message = res.data.message;
+          }
+        } else {
+          console.log('收藏出错')
+        }
+      } catch (error) {
+        console.log("收藏出错")
+      }
+    }
+
     return {
       input,
       isReady,
@@ -537,6 +561,7 @@ export default defineComponent({
       getPoetryList,
       nextSentence,
       check,
+      addFavorite
     };
   }
 });

@@ -75,7 +75,17 @@ public class PoetryServiceImpl implements PoetryService {
     @Override
     public Boolean favPoetry(Long id) {
         User user = securityUtil.getCurrentUser();
+        if (user == null) {
+            throw HCIException.DIYException("请先登录");
+        }
         Poetry poetry = poetryRepository.findById(id).orElse(null);
+        if (user.getFavPoetry() == null || user.getFavPoetry().isEmpty()){
+            List<Long> favPoetry = new ArrayList<>();
+            favPoetry.add(id);
+            user.setFavPoetry(favPoetry);
+            userRepository.save(user);
+            return true;
+        }
         if (user.getFavPoetry().contains(id)) {
             throw HCIException.DIYException("已经收藏过了");
         }

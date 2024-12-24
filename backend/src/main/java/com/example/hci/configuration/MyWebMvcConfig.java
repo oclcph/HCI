@@ -27,7 +27,6 @@ public class MyWebMvcConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 .excludePathPatterns("/api/users/register")
                 .excludePathPatterns("/api/users/login")
-                .excludePathPatterns("/api/poetry/**")
                 .order(1);
     }
 }
