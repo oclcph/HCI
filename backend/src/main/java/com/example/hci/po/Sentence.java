@@ -1,5 +1,6 @@
 package com.example.hci.po;
 
+import com.example.hci.vo.SentenceVO;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,4 +25,12 @@ public class Sentence {
 
     @ManyToOne
     private Poetry poetry;
+
+    public SentenceVO toVO() {
+        SentenceVO sentenceVO = new SentenceVO();
+        sentenceVO.setId(this.id);
+        sentenceVO.setPrev(this.prev);
+        sentenceVO.setNext(this.next);
+        return sentenceVO;
+    }
 }

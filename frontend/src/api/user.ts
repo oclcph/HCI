@@ -1,4 +1,4 @@
-import axios from "axios";
+import { axios } from "../router/request";
 import {USER_MODULE} from "./api";
 
 type LoginInfo = {

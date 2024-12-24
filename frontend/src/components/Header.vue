@@ -78,6 +78,8 @@ export default defineComponent({
           password.value = '';
           confirmPassword.value = '';
           ElMessage.success('登陆成功')
+          const token = res.data.result
+          sessionStorage.setItem('token', token)
         } else if (res.data.code === '400'){
           ElMessage.error(res.data.message)
         }
@@ -158,7 +160,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <header class="flex justify-between p-6 bg-[#6f1d1b] text-[#d0b28d] text-lg font-serif">
+  <header class="flex justify-between p-6 bg-[#6f1d1b] text-[#d0b28d] text-lg">
     <router-link to="/" class="logo text-[#c8b68d] font-serif font-extrabold text-3xl" @click="() => { setCurrentPage('home') }">
       古诗词填空
     </router-link>
@@ -254,13 +256,13 @@ export default defineComponent({
               </div>
             </div>
             <div class="flex justify-between items-center">
-              <button type="submit" class="bg-blue-500 text-white py-2 px-6 rounded-md shadow-md hover:bg-blue-400 transition duration-200 text-sm">
+              <button type="submit" class="py-2 px-6 rounded-md shadow-md transition duration-200 text-sm">
                 登录
               </button>
               <button
                   type="button"
                   @click="() => { showLogin = false; phone = ''; password = ''; }"
-                  class="text-gray-600 hover:text-gray-950 text-sm font-medium transition duration-200"
+                  class="py-2 px-6 text-sm font-serif transition duration-200"
               >
                 取消
               </button>
@@ -336,13 +338,13 @@ export default defineComponent({
             </div>
 
             <div class="flex justify-between items-center">
-              <button type="submit" class="bg-blue-500 text-white py-2 px-6 rounded-md shadow-md hover:bg-blue-400 transition duration-200 text-sm">
+              <button type="submit" class="py-2 px-6 rounded-md shadow-md transition duration-200 text-sm">
                 注册
               </button>
               <button
                   type="button"
                   @click="() => {showRegister = false; password = ''; phone = ''; registerName = ''; confirmPassword = ''}"
-                  class="text-gray-600 hover:text-gray-950 text-sm font-medium transition duration-200"
+                  class="py-2 px-6 text-sm font-medium transition duration-200"
               >
                 取消
               </button>
@@ -414,14 +416,6 @@ nav a.active {
 
 nav a:focus {
   outline: none;
-}
-
-/* 水墨画风格背景 */
-body {
-  background-image: url('https://example.com/watercolor-background.png'); /* 更换为水墨画背景 */
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
 }
 
 /* 弹窗的背景遮罩样式 */

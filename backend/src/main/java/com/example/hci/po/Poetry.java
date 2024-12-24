@@ -40,6 +40,10 @@ public class Poetry {
     @Enumerated(EnumType.STRING)
     private PoetryTypeEnum type;
 
+    @Basic
+    @Column(name = "content")
+    private String content;
+
     public PoetryVO toVO(){
         PoetryVO poetryVO = new PoetryVO();
         poetryVO.setId(this.id);
@@ -48,6 +52,7 @@ public class Poetry {
         poetryVO.setDynasty(this.dynasty);
         poetryVO.setLevel(this.level);
         poetryVO.setType(this.type);
+        poetryVO.setContent(this.content);
         return poetryVO;
     }
 }
