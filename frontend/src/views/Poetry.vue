@@ -116,7 +116,7 @@
   </div>
 
   <div v-else class="flex flex-col items-center justify-center h-screen relative overflow-hidden">
-    <p class="text-lg text-gray-800">您共答了{{problemNumber}}道题，正确率{{ (correct / problemNumber * 100).toFixed(2) }}%</p>
+    <p class="text-lg text-gray-800">您共答了{{problemNumber}}道题，正确率{{ (rate * 100).toFixed(2) }}%</p>
     <button @click="back" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
       返回首页
     </button>
@@ -129,6 +129,7 @@ import { getSentence, getDifferentPoetry, addToFavorite } from "../api/poetry";
 import { defineComponent, ref } from 'vue';
 import {useRoute, useRouter} from 'vue-router'
 import {ElMessage} from "element-plus";
+import {addRate} from "../api/user";
 
 export interface Poetry {
   id: number;
@@ -454,11 +455,15 @@ export default defineComponent({
 
     const finished = ref(false)
     const nextSentence = () => {
-      if (currentNumber.value !== problemNumber.value) {
+      console.log(correct.value, problemNumber.value)
+      if (currentNumber.value !== problemNumber.value - 1) {
         display();
         currentNumber.value += 1
       } else {
         finished.value = true
+        rate.value = correct.value / problemNumber.value
+        rate.value = parseFloat(rate.value.toFixed(4))
+        saveRate(rate.value)
       }
       selectedIndexes.value = []
       words.value = []
@@ -468,6 +473,14 @@ export default defineComponent({
       input.value = ""
       showAnswer.value = false
       skip.value = true;
+    }
+
+    const rate = ref(0.0)
+    const saveRate = async (rate: number) => {
+      const res = await addRate(rate)
+      if (res.data.code === '400') {
+        ElMessage.error("历史记录保存出错")
+      }
     }
 
     const selectedIndexes = ref<number[]>([]);
@@ -589,7 +602,7 @@ export default defineComponent({
       currentPoetry,
       finished,
       problemNumber,
-      correct,
+      rate,
 
       handleSkip,
       selectWord,
