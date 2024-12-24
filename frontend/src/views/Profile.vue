@@ -16,12 +16,17 @@
         <!-- 其他个人信息 -->
       </div>
     </div>
+    <div>
+      <h1 class="text-2xl font-bold">最近十次正确率</h1>
+      <LineChart :chart-data="chartData" :chart-options="chartOptions" />
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import {defineComponent, onMounted, ref} from 'vue';
 import { getUser } from "../api/user";
+import LineChart from "../components/LineChart.vue";
 
 interface User {
   phone: string;
@@ -30,6 +35,8 @@ interface User {
 }
 
 export default defineComponent({
+  name: "Profile",
+  components: {LineChart},
   setup() {
     const user = ref<User>({phone: "", password: "", rates: []});
     const rates = ref<number[]>([])
@@ -40,15 +47,117 @@ export default defineComponent({
         user.value.phone = res.data.result.phone;
         user.value.password = res.data.result.password;
         user.value.rates = res.data.result.correctRate;
-        rates.value = user.value.rates;
+        rates.value = user.value.rates.slice(-10);
       }
     }
+
+    const loading = ref(true);
+    const chartData = ref({
+      labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
+      datasets: [
+        {
+          label: '正确率',
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          data: [0],
+        },
+      ],
+    });
+
+    const chartOptions = ref({
+      responsive: true,
+      plugins: {
+        legend: { display: true },
+        title: { display: false, text: '折线图示例' },
+      },
+      scales: {
+        x: {
+          grid: {
+            color: 'rgba(0, 0, 0, 0.1)', // 网格线颜色
+          },
+          ticks: {
+            color: '#333333', // X轴刻度文字颜色
+            font: {
+              size: 14, // 可选，调整文字大小以增加对比度
+              weight: 'bold', // 可选，加粗文字
+            },
+          },
+          border: {
+            color: '#111111',
+            size: 2,
+          }
+        },
+        y: {
+          min: 0,
+          max: 1.0,
+          grid: {
+            color: 'rgba(0, 0, 0, 0.1)', // 网格线颜色
+          },
+          ticks: {
+            color: '#333333', // Y轴刻度文字颜色
+            font: {
+              size: 14, // 可选，调整文字大小以增加对比度
+              weight: 'bold', // 可选，加粗文字
+            },
+          },
+          border: {
+            color: '#111111',
+            size: 2,
+          }
+        },
+      },
+    });
+
+    const updateChartData = () => {
+      // 随机生成新数据
+      const newData = Array.from({ length: 6 }, () => Math.floor(Math.random() * 100));
+      chartData.value = {
+        ...chartData.value,
+        datasets: [
+          {
+            ...chartData.value.datasets[0],
+            data: newData,
+          },
+        ],
+      };
+      console.log('Chart data updated:', newData);
+    };
+
+    const fetchData = async () => {
+      try {
+        await getUserInfo()
+
+        // 更新 chartData
+        console.log(rates.value)
+        // chartData.value.labels = rates.value.map((_, index) => `第${index + 1}个`);
+        chartData.value = {
+          ...chartData.value,
+          datasets: [
+            {
+              ...chartData.value.datasets[0],
+              data: rates.value,
+            },
+          ],
+        };
+        console.log(chartData.value.datasets[0].data)
+      } catch (error) {
+        console.error('数据获取失败：', error);
+      } finally {
+        loading.value = false;
+      }
+    };
+
     onMounted(() => {
-      getUserInfo();
+      fetchData();
+      // updateChartData();
     })
 
     return {
       user,
+      loading,
+      chartData,
+      chartOptions,
+      updateChartData,
     };
   },
 });
@@ -61,5 +170,9 @@ export default defineComponent({
 
 .profile h1{
   margin-bottom: 15px;
+}
+
+h1 {
+  @apply text-center;
 }
 </style>
