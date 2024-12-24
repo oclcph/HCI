@@ -143,7 +143,7 @@ public class PoetryServiceImpl implements PoetryService {
 
     public List<PoetryVO> searchPoetry(String keyword) {
         List<Poetry> poetryList = poetryRepository.findByTitleContainingOrAuthor(keyword,keyword);
-        List<Sentence> sentenceList = sentenceRepository.findByPrevOrNext(keyword,keyword);
+        List<Sentence> sentenceList = sentenceRepository.findByPrevContainingOrNextContaining(keyword,keyword);
         for(Sentence sentence:sentenceList){
             if(poetryList.contains(sentence.getPoetry())) continue;
             poetryList.add(sentence.getPoetry());
