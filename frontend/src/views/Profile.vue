@@ -7,7 +7,7 @@
       <div class="mt-4">
         <div class="flex items-center mb-2">
           <i class="fas fa-user text-stone-500 mr-2"></i>
-          <p class="text-stone-600">姓名: {{ user.name }}</p>
+          <p class="text-stone-600">姓名: {{ user.phone }}</p>
         </div>
         <div class="flex items-center mb-2">
           <i class="fas fa-envelope text-stone-500 mr-2"></i>
@@ -20,14 +20,32 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import {defineComponent, onMounted, ref} from 'vue';
+import { getUser } from "../api/user";
+
+interface User {
+  phone: string;
+  password: string;
+  rates: number[];
+}
 
 export default defineComponent({
   setup() {
-    const user = ref({
-      name: '张三',
-      email: 'zhangsan@example.com',
-    });
+    const user = ref<User>({phone: "", password: "", rates: []});
+    const rates = ref<number[]>([])
+
+    const getUserInfo = async () => {
+      const res = await getUser();
+      if (res.data.code === '000'){
+        user.value.phone = res.data.result.phone;
+        user.value.password = res.data.result.password;
+        user.value.rates = res.data.result.correctRate;
+        rates.value = user.value.rates;
+      }
+    }
+    onMounted(() => {
+      getUserInfo();
+    })
 
     return {
       user,

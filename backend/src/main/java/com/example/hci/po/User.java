@@ -52,6 +52,7 @@ public class User {
         userVO.setPassword(password);
         userVO.setCreateTime(createTime);
         userVO.setFavPoetry(favPoetry);
+        userVO.setCorrectRate(correctRate);
         return userVO;
     }
 }

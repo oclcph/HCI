@@ -26,6 +26,9 @@ public class UserVO {
 
     private List<Long> favPoetry;
 
+    private List<Double> correctRate;
+
+
     public User toPO(){
 
         User user = new User();
@@ -34,6 +37,7 @@ public class UserVO {
         user.setPhone(phone);
         user.setPassword(password);
         user.setCreateTime(createTime);
+        user.setCorrectRate(correctRate);
         user.setFavPoetry(favPoetry);
         return user;
 
