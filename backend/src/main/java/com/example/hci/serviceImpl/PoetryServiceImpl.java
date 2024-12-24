@@ -35,6 +35,16 @@ public class PoetryServiceImpl implements PoetryService {
     SecurityUtil securityUtil;
 
     @Override
+    public List<PoetryVO> getAllPoetry(){
+        List<Poetry> poetryList = poetryRepository.findAll();
+        List<PoetryVO> poetryVOList = new ArrayList<>();
+        for (Poetry poetry : poetryList) {
+            poetryVOList.add(poetry.toVO());
+        }
+        return poetryVOList;
+    }
+
+    @Override
     public PoetryVO getPoetry(Long id) {
         Poetry poetry = poetryRepository.findById(id).orElse(null);
         if (poetry == null) {
