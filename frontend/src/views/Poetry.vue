@@ -98,7 +98,11 @@
           <button
               v-else
               @click="nextSentence"
-              class="px-6 py-2 text-lg font-semibold rounded bg-blue-700 text-white hover:bg-blue-800 transition border border-blue-900"
+              class="px-6 py-2 text-lg font-semibold rounded hover:bg-opacity-80 transition"
+              :class="{
+            'bg-green-700 text-white border-green-900': message.status === 'success',
+            'bg-red-700 text-white border-red-900': message.status === 'failure'
+          }"
           >
             继续
           </button>
