@@ -21,6 +21,7 @@ public class PoetryVO {
 
     private PoetryLevelEnum level;
     private String dynasty;
+    private String content;
     public Poetry toPO() {
         Poetry poetry = new Poetry();
         poetry.setId(id);
@@ -28,6 +29,8 @@ public class PoetryVO {
         poetry.setType(type);
         poetry.setLevel(level);
         poetry.setTitle(title);
+        poetry.setDynasty(dynasty);
+        poetry.setContent(content);
         return poetry;
     }
 
