@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col items-center justify-center h-screen relative overflow-hidden">
+  <div v-if="!finished" class="flex flex-col items-center justify-center h-screen relative overflow-hidden">
     <transition name="fade" mode="out-in">
       <div v-if="!isReady" key="intro" class="absolute inset-0 flex flex-col items-center justify-center text-5xl font-bold text-center text-gray-800 bg-transparent">
         <div class="animate-fadeIn artistic-text">{{ counttext }}</div>
@@ -114,6 +114,13 @@
       </div>
     </div>
   </div>
+
+  <div v-else class="flex flex-col items-center justify-center h-screen relative overflow-hidden">
+    <p class="text-lg text-gray-800">您共答了{{problemNumber}}道题，正确率{{ (correct / problemNumber * 100).toFixed(2) }}%</p>
+    <button @click="back" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+      返回首页
+    </button>
+  </div>
 </template>
 
 <script lang="ts">
@@ -193,6 +200,16 @@ export default defineComponent({
     const counttext = ref('准备好了吗？');
 
     const ans = ref<string>()
+
+    const problemNumber = computed(() => {
+      if (level.value === "LOW")
+        return 10;
+      else if (level.value === "MID")
+        return 20;
+      else return 30;
+    })
+    const currentNumber = ref(0)
+    const correct = ref(0)
 
     const gridClass = computed(() => {
       if (currentProblem.value === '九宫格')
@@ -435,8 +452,14 @@ export default defineComponent({
     };
 
 
+    const finished = ref(false)
     const nextSentence = () => {
-      display();
+      if (currentNumber.value !== problemNumber.value) {
+        display();
+        currentNumber.value += 1
+      } else {
+        finished.value = true
+      }
       selectedIndexes.value = []
       words.value = []
       disturb.value = []
@@ -467,18 +490,21 @@ export default defineComponent({
         input.value = selectedIndexes.value.map(index => words.value[index]).join('')
         if (input.value === displaySentence.value?.prev || input.value === displaySentence.value?.next){
           message.value = {status: "success", message: "答对了，恭喜你！"}
+          correct.value += 1
         } else {
           message.value = {status: "failure", message: "答错了，真可惜。"}
         }
       } else if (currentProblem.value === "上句空") {
         if (input.value === displaySentence.value?.prev) {
           message.value = {status: "success", message: "答对了，恭喜你！"}
+          correct.value += 1
         } else {
           message.value = {status: "failure", message: "答错了，真可惜。"}
         }
       } else if (currentProblem.value === "下句空") {
         if (input.value === displaySentence.value?.next) {
           message.value = {status: "success", message: "答对了，恭喜你！"}
+          correct.value += 1
         } else {
           message.value = {status: "failure", message: "答错了，真可惜。"}
         }
@@ -516,6 +542,7 @@ export default defineComponent({
         getPoetryList(level.value, type, size.value)
       })
       startCountdown(); // 开始倒计时
+      finished.value = false;
     });
 
     // 添加收藏
@@ -540,6 +567,10 @@ export default defineComponent({
       }
     }
 
+    const back = () => {
+      router.push('/home')
+    }
+
     return {
       input,
       isReady,
@@ -556,12 +587,17 @@ export default defineComponent({
       ans,
       canCheck,
       currentPoetry,
+      finished,
+      problemNumber,
+      correct,
+
       handleSkip,
       selectWord,
       getPoetryList,
       nextSentence,
       check,
-      addFavorite
+      addFavorite,
+      back
     };
   }
 });
