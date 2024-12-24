@@ -15,6 +15,11 @@ public class PoetryController {
     @Autowired
     PoetryService poetryService;
 
+    @GetMapping("/getAll")
+    public ResultVO<List<PoetryVO>> getAllPoetry(){
+        return ResultVO.buildSuccess(poetryService.getAllPoetry());
+    }
+
     @GetMapping("/{id}")
     public ResultVO<PoetryVO> getPoetry(@PathVariable(value = "id") Long id) {
         return ResultVO.buildSuccess(poetryService.getPoetry(id));
