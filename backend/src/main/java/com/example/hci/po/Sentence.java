@@ -31,6 +31,7 @@ public class Sentence {
         sentenceVO.setId(this.id);
         sentenceVO.setPrev(this.prev);
         sentenceVO.setNext(this.next);
+//        sentenceVO.setPoetry(this.poetry);
         return sentenceVO;
     }
 }

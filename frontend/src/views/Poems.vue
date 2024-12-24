@@ -1,19 +1,38 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
+import { Poetry, Sentence } from "./Poetry.vue";
+import {getAllPoetry} from "../api/poetry";
+import {ElMessage} from "element-plus";
+import {computed, onMounted} from "vue";
+
 
 export default defineComponent({
   name: 'Poems',
   setup() {
-    const poems = ref<{ title: string; author: string; content: string }[]>([
-      { title: '静夜思', author: '李白', content: '床前明月光，疑是地上霜。举头望明月，低头思故乡。' },
-      { title: '春晓', author: '孟浩然', content: '春眠不觉晓，处处闻啼鸟。夜来风雨声，花落知多少。' },
-    ]);
+    const poems = ref<Poetry[]>([])
+
+    const getAllPoems = async () => {
+      try {
+        const res = await getAllPoetry();
+        if (res.data.code === '000') {
+          poems.value = res.data.result;
+        } else if (res.data.code === '400') {
+          ElMessage.error(res.data.message);
+        }
+      } catch (error) {
+        ElMessage.error("诗词获取失败")
+      }
+    }
 
     const expandedPoems = ref<{ [key: number]: boolean }>({});
 
     const togglePoem = (index: number) => {
       expandedPoems.value[index] =!expandedPoems.value[index];
     };
+
+    onMounted(() => {
+      getAllPoems();
+    })
 
     return {
       poems,
@@ -36,7 +55,7 @@ export default defineComponent({
       >
         <div class="flex justify-between items-center">
           <div class="font-semibold text-lg text-gray-800">{{ poem.title }}</div>
-          <div class="text-gray-600 text-sm">{{ poem.author }}</div>
+          <div class="text-gray-600 text-sm">{{poem.dynasty}}·{{ poem.author }}</div>
         </div>
         <transition name="slide">
           <div v-if="expandedPoems[index]" class="mt-4 text-gray-700">

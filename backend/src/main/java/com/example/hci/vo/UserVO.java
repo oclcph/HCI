@@ -24,6 +24,8 @@ public class UserVO {
 
     private Date createTime;
 
+    private List<Long> favPoetry;
+
     public User toPO(){
 
         User user = new User();
@@ -32,6 +34,7 @@ public class UserVO {
         user.setPhone(phone);
         user.setPassword(password);
         user.setCreateTime(createTime);
+        user.setFavPoetry(favPoetry);
         return user;
 
     }

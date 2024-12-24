@@ -121,17 +121,17 @@ import { defineComponent, ref } from 'vue';
 import {useRoute, useRouter} from 'vue-router'
 import {ElMessage} from "element-plus";
 
-interface Poetry {
+export interface Poetry {
   id: number;
   title: string;
   author: string;
   type: string;
-
   level: string;
   dynasty: string;
+  content: string;
 }
 
-interface Sentence {
+export interface Sentence {
   id: number;
   prev: string;
   next: string;

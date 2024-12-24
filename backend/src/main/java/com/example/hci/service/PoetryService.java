@@ -2,10 +2,7 @@ package com.example.hci.service;
 
 import com.example.hci.enums.PoetryLevelEnum;
 import com.example.hci.enums.PoetryTypeEnum;
-import com.example.hci.vo.GridContentVO;
-import com.example.hci.vo.GridRequest;
-import com.example.hci.vo.PoetryVO;
-import com.example.hci.vo.SentenceVO;
+import com.example.hci.vo.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +16,16 @@ public interface PoetryService {
     List<PoetryVO> getPoetryByLevelAndType(PoetryLevelEnum level, PoetryTypeEnum type, Integer size);
 
     List<SentenceVO> getPoetrySentence(Long id);
+    Boolean favPoetry(Long id);
+
+    Boolean unfavPoetry(Long id);
+
+    List<PoetryVO> getFavPoetry();
+
+    List<PoetryVO> searchPoetry(String keyword);
+
+    List<PoetryVO> getAllPoetry();
+
 
 //     GridContentVO getGridContent(GridRequest gridRequest);
 }

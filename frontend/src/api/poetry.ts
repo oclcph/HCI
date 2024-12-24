@@ -8,3 +8,7 @@ export const getDifferentPoetry = (level: string, type: string, size: number) =>
 export const getSentence = (id: number) => {
     return axios.get(`${POETRY_MODULE}/${id}/sentence`);
 }
+
+export const getAllPoetry = () => {
+    return axios.get(`${POETRY_MODULE}/getAll`);
+}
