@@ -49,4 +49,14 @@ public class UserServiceImpl implements UserService {
         User user = securityUtil.getCurrentUser();
         return user.toVO();
     }
+    @Override
+    public Boolean addCorrectRate(Double rate) {
+        if (rate < 0 || rate > 1) {
+            throw HCIException.DIYException("正确率应在0-1之间");
+        }
+        User user = securityUtil.getCurrentUser();
+        user.getCorrectRate().add(rate);
+        userRepository.save(user);
+        return true;
+    }
 }
