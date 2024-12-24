@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="bg-cover bg-center min-h-screen" :style="{ backgroundImage: 'url(' + backgroundImage + ')' }">
+  <div id="app">
     <!-- 头部导航栏 -->
     <Header />
 
@@ -8,7 +8,7 @@
       <!-- 路由视图，根据路由显示不同页面 -->
       <router-view />
     </main>
-    <Footer />
+    <Footer v-if="eventBus.footerVisible"/>
   </div>
 </template>
 
@@ -16,7 +16,7 @@
 import { defineComponent } from 'vue';
 import Header from './components/Header.vue'; // 导入头部组件
 import Footer from "./components/Footer.vue";
-import backgroundImage from './assets/background.jpg'; // 导入背景图片
+import eventBus from "./router/eventBus";
 // import backgroundImage from './assets/bg.jpg'
 
 export default defineComponent({
@@ -27,7 +27,7 @@ export default defineComponent({
   },
   data() {
     return {
-      backgroundImage, // 将图片路径赋值给 data
+      eventBus,
     };
   },
 });
@@ -37,7 +37,16 @@ export default defineComponent({
 /* 全局样式，可以根据需要扩展 */
 #app {
   font-family: 'Arial', sans-serif;
-  background-color: #f9fafb;
   min-height: 100vh;
+}
+
+body {
+  margin: 0;
+  height: 100vh; /* 确保 body 高度为视口高度 */
+  background-image: url('./assets/background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed; /* 固定背景 */
 }
 </style>

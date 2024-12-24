@@ -24,3 +24,7 @@ export const getFavorite = () => {
 export const deleteFavorite = (id: number) => {
     return axios.post(`${POETRY_MODULE}/${id}/unfav`);
 }
+
+export const searchPoems = (keyword: string) => {
+    return axios.get(`${POETRY_MODULE}/search/`, {params: {keyword: keyword}});
+}
