@@ -12,6 +12,7 @@
         <input
             v-model="input"
             class="mb-4 p-2 border border-gray-300 rounded"
+            :disabled="showAnswer"
             placeholder="请输入上半句"
         />
         <div class="text-lg">
@@ -26,6 +27,7 @@
         <input
             v-model="input"
             class="mb-4 p-2 border border-gray-300 rounded"
+            :disabled="showAnswer"
             placeholder="请输入下半句"
         />
       </div>
@@ -35,7 +37,7 @@
             class="flex items-center justify-center w-16 h-16 bg-gray-200 border border-gray-300 rounded cursor-pointer hover:bg-gray-300"
             v-for="(word, index) in words"
             :key="index"
-            @click="selectWord(index)"
+            @click="!showAnswer && selectWord(index)"
             :class="{ 'bg-green-300': selectedIndexes.includes(index) }"
         >
           {{ word }}
@@ -47,16 +49,64 @@
       </div>
     </div>
 
-    <button v-if="isReady" @click="check">确认</button>
-    <div v-if="isReady && isChecked">{{ message.message }}</div>
 
-    <button
-        v-if="isReady && isChecked"
-        @click="nextSentence"
-        class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+    <div v-if="isReady" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 w-3/4 bg-white bg-opacity-70 p-4 rounded shadow-md border border-yellow-800"
     >
-      下一首诗歌
-    </button>
+      <!-- 显示答案 -->
+      <div
+          v-if="showAnswer && isReady && message.status === 'failure'"
+          class="mt-4 text-lg text-red-700"
+      >
+        正确答案为：{{ ans }}
+      </div>
+
+      <!-- 按钮和状态行 -->
+      <div
+          class="flex items-center justify-between p-4 rounded transition"
+          :class="{
+        'bg-green-100 border-green-700 text-green-800': isChecked && message.status === 'success',
+        'bg-red-100 border-red-700 text-red-800': isChecked && message.status === 'failure',
+        'bg-transparent': !isChecked
+      }"
+      >
+        <!-- 跳过按钮或状态信息 -->
+        <div>
+          <button
+              v-if="!isChecked && isReady"
+              :disabled="!skip || isChecked"
+              @click="handleSkip"
+              class="px-6 py-2 text-lg font-semibold rounded bg-yellow-700 text-white hover:bg-yellow-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition border border-yellow-900 mr-16"
+          >
+            跳过
+          </button>
+          <div v-else>
+            ——{{ currentPoetry?.dynasty }} · {{ currentPoetry?.author }} · 《{{ currentPoetry?.title }}》
+            <div>{{ message.message }}</div>
+          </div>
+        </div>
+
+        <!-- 确认按钮或下一首诗歌按钮 -->
+        <div>
+          <button
+              v-if="!isChecked && isReady"
+              :disabled="!canCheck"
+              @click="check"
+              class="px-6 py-2 text-lg font-semibold rounded bg-green-700 text-white hover:bg-green-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition border border-green-900 ml-16"
+          >
+            确认
+          </button>
+          <button
+              v-else
+              @click="nextSentence"
+              class="px-6 py-2 text-lg font-semibold rounded bg-blue-700 text-white hover:bg-blue-800 transition border border-blue-900"
+          >
+            继续
+          </button>
+        </div>
+      </div>
+
+
+    </div>
   </div>
 </template>
 
@@ -135,6 +185,8 @@ export default defineComponent({
     const isReady = ref(false);
     const countdown = ref(6); // 倒计时初始值
     const counttext = ref('准备好了吗？');
+
+    const ans = ref<string>()
 
     const gridClass = computed(() => {
       if (currentProblem.value === '九宫格')
@@ -304,9 +356,12 @@ export default defineComponent({
         const randomIndex = Math.floor(Math.random() * 2);
         if (randomIndex == 0 || displaySentence.value.next == null) {
           words.value = Array.from(displaySentence.value.prev)
+          ans.value = displaySentence.value.prev
         } else {
           words.value = Array.from(displaySentence.value.next);
+          ans.value = displaySentence.value.next
         }
+
 
         let disturbNum = 0;
         // 根据题型判断干扰项的选择
@@ -339,6 +394,10 @@ export default defineComponent({
           if (currentProblem.value === "九宫格" || currentProblem.value === "十二宫格") {
             await getWords();  // 等待获取词语
             console.log(words.value)
+          } else if (currentProblem.value === "上句空") {
+            ans.value = displaySentence.value?.prev;
+          } else {
+            ans.value = displaySentence.value?.next;
           }
         } else {
           ElMessage.error("未选中诗歌");
@@ -378,6 +437,8 @@ export default defineComponent({
       disturbSentences.value = []
       isChecked.value = false
       input.value = ""
+      showAnswer.value = false
+      skip.value = true;
     }
 
     const selectedIndexes = ref<number[]>([]);
@@ -417,10 +478,32 @@ export default defineComponent({
         }
       }
       isChecked.value = true;
-      console.log(message.value)
+      showAnswer.value = true;
+      // skip.value = false;
     }
 
-    const input = ref<string>()
+    const input = ref<string>('')
+
+    const skip = ref(true); // 是否允许跳过
+    const showAnswer = ref(false); // 是否显示答案
+    const canCheck = computed(() => {
+      if (selectedIndexes.value.length >= 1) {
+        return true;
+      } else if (input.value.length >= 1) {
+        return true;
+      }
+      return false;
+    })
+
+    // 跳过按钮点击事件
+    const handleSkip = () => {
+      showAnswer.value = true;
+      isChecked.value = true;
+      skip.value = false; // 禁用跳过按钮
+      input.value = ''; // 清空输入框
+      message.value = {status: "failure", message: "答错了，真可惜。"};
+    };
+
     onMounted(() => {
       router.replace({ query: {} });
       types.value.forEach(type => {
@@ -440,6 +523,12 @@ export default defineComponent({
       selectedIndexes,
       isChecked,
       message,
+      skip,
+      showAnswer,
+      ans,
+      canCheck,
+      currentPoetry,
+      handleSkip,
       selectWord,
       getPoetryList,
       nextSentence,
@@ -498,5 +587,29 @@ p {
 .fade-enter, .fade-leave-to {
   opacity: 0;
   transform: translateY(20px); /* 向下移动 */
+}
+
+.bg-green-100 {
+  background-color: #d4edda;
+}
+.text-green-800 {
+  color: #155724;
+}
+.border-green-700 {
+  border-color: #155724;
+}
+
+/* 失败状态颜色 */
+.bg-red-100 {
+  background-color: #f8d7da;
+}
+.text-red-800 {
+  color: #721c24;
+}
+.border-red-700 {
+  border-color: #721c24;
+}
+.bg-transparent {
+  background-color: transparent;
 }
 </style>
