@@ -32,7 +32,7 @@
         </div>
         <img src="../assets/l1.jpg" alt="随机模式" class="item-image" />
       </div>
-      <div class="item large bg-white shadow-lg rounded-lg overflow-hidden cursor-pointer transition-transform transform hover:-translate-y-1" @click="handleClick('诗词收藏')">
+      <div class="item large bg-white shadow-lg rounded-lg overflow-hidden cursor-pointer transition-transform transform hover:-translate-y-1" @click="handleClick('收藏中心')">
         <div class="item-content">
           <h2 class="cta">诗词收藏</h2>
         </div>
@@ -46,14 +46,19 @@
 import { defineComponent, ref } from 'vue';
 import {useRouter} from "vue-router";
 import axios from "axios";
-import {getPoetry} from "../api/poetry";
 
 export default defineComponent({
   name: 'HomePage',
   setup(){
     const router = useRouter();
+    const levels = ref(['LOW', 'MID', 'HIGH'])
     const handleClick = (level: string) => {
-      router.push({path: `/poetry`, query: {level: level}});
+      if (level === "随机模式") {
+        const randomIdx = Math.floor(Math.random() * levels.value.length);
+        level = levels.value[randomIdx];
+      }
+      if (level !== "收藏中心")
+        router.push({path: `/poetry`, query: {level: level}});
     };
     return {
       handleClick,
