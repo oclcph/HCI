@@ -20,7 +20,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import com.example.hci.po.Sentence;
+
 @Service
 public class PoetryServiceImpl implements PoetryService {
     @Autowired
@@ -31,6 +33,7 @@ public class PoetryServiceImpl implements PoetryService {
     UserRepository userRepository;
     @Autowired
     SecurityUtil securityUtil;
+
     @Override
     public PoetryVO getPoetry(Long id) {
         Poetry poetry = poetryRepository.findById(id).orElse(null);
@@ -54,7 +57,7 @@ public class PoetryServiceImpl implements PoetryService {
 
     @Override
     public List<SentenceVO> getPoetrySentence(Long id) {
-        return  sentenceRepository.findByPoetryId(id).stream()
+        return sentenceRepository.findByPoetryId(id).stream()
                 .map(Sentence::toVO)
                 .collect(Collectors.toList());
     }
@@ -63,7 +66,7 @@ public class PoetryServiceImpl implements PoetryService {
     public Boolean favPoetry(Long id) {
         User user = securityUtil.getCurrentUser();
         Poetry poetry = poetryRepository.findById(id).orElse(null);
-        if(user.getFavPoetry().contains(id)){
+        if (user.getFavPoetry().contains(id)) {
             throw HCIException.DIYException("已经收藏过了");
         }
         if (poetry == null) {
@@ -73,6 +76,7 @@ public class PoetryServiceImpl implements PoetryService {
         userRepository.save(user);
         return true;
     }
+
     @Override
     public Boolean unfavPoetry(Long id) {
         User user = securityUtil.getCurrentUser();
@@ -117,8 +121,20 @@ public class PoetryServiceImpl implements PoetryService {
                 .collect(Collectors.toList());
     }
 
-
-
+    public List<PoetryVO> searchPoetry(String keyword) {
+        List<Poetry> poetryList = poetryRepository.findByTitleContainingOrAuthor(keyword,keyword);
+        List<Sentence> sentenceList = sentenceRepository.findByPrevOrNext(keyword,keyword);
+        for(Sentence sentence:sentenceList){
+            if(poetryList.contains(sentence.getPoetry())) continue;
+            poetryList.add(sentence.getPoetry());
+        }
+        if (poetryList.isEmpty()) {
+            throw HCIException.DIYException("没有找到相关的诗歌");
+        }
+        return poetryList.stream()
+                .map(Poetry::toVO)
+                .collect(Collectors.toList());
+    }
 
 
 }

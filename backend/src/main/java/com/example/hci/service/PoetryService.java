@@ -22,6 +22,8 @@ public interface PoetryService {
 
     List<PoetryVO> getFavPoetry();
 
+    List<PoetryVO> searchPoetry(String keyword);
+
 
 //     GridContentVO getGridContent(GridRequest gridRequest);
 }

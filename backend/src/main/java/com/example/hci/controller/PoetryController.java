@@ -35,6 +35,10 @@ public class PoetryController {
     public ResultVO<List<PoetryVO>> getFavPoetry(){
         return ResultVO.buildSuccess(poetryService.getFavPoetry());
     }
+    @GetMapping("/search")
+    public ResultVO<List<PoetryVO>> searchPoetry(@RequestParam("keyword") String keyword){
+        return ResultVO.buildSuccess(poetryService.searchPoetry(keyword));
+    }
 
 
     @GetMapping("/level") // 通过诗歌等级获取指定数量的诗歌,随机打乱过了
