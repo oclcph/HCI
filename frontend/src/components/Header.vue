@@ -30,6 +30,8 @@ export default defineComponent({
     const telLegal = computed(() => chinaMobileRegex.test(phone.value))
     const isPasswordIdentical = computed(() => password.value == confirmPassword.value)
 
+    const router = useRouter()
+
     const closeDropdown = (event: MouseEvent) => {
       if (
           dropdownMenu.value &&
@@ -42,8 +44,6 @@ export default defineComponent({
 
     onMounted(() => {
       document.addEventListener('click', closeDropdown);  // 监听鼠标，实现点到其他区域会自动关闭下拉框
-      // 逻辑代码
-      console.log(123456);
     });
     // 清理全局点击事件监听器
     onBeforeUnmount(() => {
@@ -121,7 +121,14 @@ export default defineComponent({
     };
 
     const setCurrentPage = (page: string) => {
-      currentPage.value = page;
+      const token = sessionStorage.getItem('token');
+      if (page !== 'home' && page !== "about" && (token == null || token === '')) {
+        ElMessage.error("请先登录")
+        router.push('/' + currentPage.value)
+      } else {
+        currentPage.value = page;
+        router.push('/' + page)
+      }
     }
 
     return {
@@ -162,12 +169,12 @@ export default defineComponent({
 
 <template>
   <header class="flex justify-between p-6 bg-[#6f1d1b] text-[#d0b28d] text-lg">
-    <router-link to="/" class="logo text-[#c8b68d] font-serif font-extrabold text-3xl" @click="() => { setCurrentPage('home') }">
+    <router-link to="/home" class="logo text-[#c8b68d] font-serif font-extrabold text-3xl" @click="() => { setCurrentPage('home') }">
       古诗词填空
     </router-link>
 
     <nav class="flex items-center space-x-8 text-lg font-serif">
-      <router-link to="/"
+      <router-link to="/home"
                    class="px-4 py-2 transition duration-300 ease-in-out rounded hover:bg-[#c8b68d] hover:text-[#6f1d1b] active:bg-[#a67c2f] active:text-white"
                    :class="{ 'font-bold bg-[#c8b68d] text-[#6f1d1b] shadow-lg': currentPage === 'home' }"
                    @click="setCurrentPage('home')">
@@ -176,7 +183,7 @@ export default defineComponent({
       <router-link to="/poems"
                    class="px-4 py-2 transition duration-300 ease-in-out rounded hover:bg-[#c8b68d] hover:text-[#6f1d1b] active:bg-[#a67c2f] active:text-white"
                    :class="{ 'font-bold bg-[#c8b68d] text-[#6f1d1b] shadow-lg': currentPage === 'poems' }"
-                   @click="setCurrentPage('poems')">
+                   @click.prevent="setCurrentPage('poems')">
         诗词库
       </router-link>
       <router-link to="/about"

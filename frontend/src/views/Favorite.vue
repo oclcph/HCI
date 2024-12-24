@@ -63,7 +63,7 @@ export default defineComponent({
 <template>
   <div class="poems p-5">
     <h1 class="text-3xl font-extrabold mb-6 text-center text-black animate-fade-in delay-200">收藏列表</h1>
-    <ul class="list-disc pl-5 space-y-4 max-w-xl mx-auto animate-fade-in delay-400">
+    <ul class="list-none pl-5 space-y-4 max-w-xl mx-auto animate-fade-in delay-400">
       <li
           v-for="(poem, index) in poems"
           :key="index"
