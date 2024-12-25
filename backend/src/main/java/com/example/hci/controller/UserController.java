@@ -22,6 +22,10 @@ public class UserController {
     public ResultVO<String> login(@RequestParam("phone") String phone, @RequestParam("password") String password){
         return ResultVO.buildSuccess(userService.login(phone, password));
     }
+    @PostMapping("/correctRate")
+    public ResultVO<Boolean> addCorrectRate( @RequestParam("rate") Double rate){
+        return ResultVO.buildSuccess(userService.addCorrectRate(rate));
+    }
 
     @GetMapping
     public ResultVO<UserVO> getInformation(){

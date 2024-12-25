@@ -12,3 +12,19 @@ export const getSentence = (id: number) => {
 export const getAllPoetry = () => {
     return axios.get(`${POETRY_MODULE}/getAll`);
 }
+
+export const addToFavorite = (id: number) => {
+    return axios.post(`${POETRY_MODULE}/${id}/fav`);
+}
+
+export const getFavorite = () => {
+    return axios.get(`${POETRY_MODULE}/fav/get`);
+}
+
+export const deleteFavorite = (id: number) => {
+    return axios.post(`${POETRY_MODULE}/${id}/unfav`);
+}
+
+export const searchPoems = (keyword: string) => {
+    return axios.get(`${POETRY_MODULE}/search/`, {params: {keyword: keyword}});
+}

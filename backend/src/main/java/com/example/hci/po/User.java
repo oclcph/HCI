@@ -39,6 +39,9 @@ public class User {
     @ElementCollection
     private List<Long> favPoetry;
 
+    @ElementCollection
+    private List<Double> correctRate;
+
 
 
     public UserVO toVO(){
@@ -49,6 +52,7 @@ public class User {
         userVO.setPassword(password);
         userVO.setCreateTime(createTime);
         userVO.setFavPoetry(favPoetry);
+        userVO.setCorrectRate(correctRate);
         return userVO;
     }
 }

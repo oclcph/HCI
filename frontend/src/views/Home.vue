@@ -45,7 +45,7 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 import {useRouter} from "vue-router";
-import axios from "axios";
+import {ElMessage} from "element-plus";
 
 export default defineComponent({
   name: 'HomePage',
@@ -53,12 +53,21 @@ export default defineComponent({
     const router = useRouter();
     const levels = ref(['LOW', 'MID', 'HIGH'])
     const handleClick = (level: string) => {
-      if (level === "随机模式") {
-        const randomIdx = Math.floor(Math.random() * levels.value.length);
-        level = levels.value[randomIdx];
+      const token = sessionStorage.getItem("token");
+      console.log(token);
+      if (token === "" || token == null) {
+        ElMessage.error("请先登录")
+      } else {
+        if (level === "随机模式") {
+          const randomIdx = Math.floor(Math.random() * levels.value.length);
+          level = levels.value[randomIdx];
+        }
+        if (level !== "收藏中心")
+          router.push({path: `/poetry`, query: {level: level}});
+        else{
+          router.push({path: `/favorite`});
+        }
       }
-      if (level !== "收藏中心")
-        router.push({path: `/poetry`, query: {level: level}});
     };
     return {
       handleClick,

@@ -29,3 +29,8 @@ export const registerApi = (register: RegisterInfo) => {
             return res
         })
 }
+
+export const addRate = (rate: number) => {
+    rate = parseFloat(rate.toFixed(4))
+    return axios.post(`${USER_MODULE}/correctRate`, null, {params: {rate: rate}})
+}

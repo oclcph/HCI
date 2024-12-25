@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col items-center justify-center h-screen relative overflow-hidden">
+  <div v-if="!finished" class="flex flex-col items-center justify-center h-screen relative overflow-hidden">
     <transition name="fade" mode="out-in">
       <div v-if="!isReady" key="intro" class="absolute inset-0 flex flex-col items-center justify-center text-5xl font-bold text-center text-gray-800 bg-transparent">
         <div class="animate-fadeIn artistic-text">{{ counttext }}</div>
@@ -75,7 +75,7 @@
               v-if="!isChecked && isReady"
               :disabled="!skip || isChecked"
               @click="handleSkip"
-              class="px-6 py-2 text-lg font-semibold rounded bg-yellow-700 text-white hover:bg-yellow-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition border border-yellow-900 mr-16"
+              class="px-6 py-2 text-lg font-semibold rounded-lg bg-yellow-700 text-white hover:bg-yellow-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition mr-16"
           >
             跳过
           </button>
@@ -87,18 +87,22 @@
 
         <!-- 确认按钮或下一首诗歌按钮 -->
         <div>
+          <button @click="addFavorite"
+                  class="px-4 py-2 text-lg font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition shadow-md mr-4">
+            收藏
+          </button>
           <button
               v-if="!isChecked && isReady"
               :disabled="!canCheck"
               @click="check"
-              class="px-6 py-2 text-lg font-semibold rounded bg-green-700 text-white hover:bg-green-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition border border-green-900 ml-16"
+              class="px-6 py-2 text-lg font-semibold rounded-lg bg-green-700 text-white hover:bg-green-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition ml-12"
           >
             确认
           </button>
           <button
               v-else
               @click="nextSentence"
-              class="px-6 py-2 text-lg font-semibold rounded hover:bg-opacity-80 transition"
+              class="px-6 py-2 text-lg font-semibold rounded-lg hover:bg-opacity-80 transition ml-12"
               :class="{
             'bg-green-700 text-white border-green-900': message.status === 'success',
             'bg-red-700 text-white border-red-900': message.status === 'failure'
@@ -108,18 +112,24 @@
           </button>
         </div>
       </div>
-
-
     </div>
+  </div>
+
+  <div v-else class="flex flex-col items-center justify-center h-screen relative overflow-hidden">
+    <p class="text-lg text-gray-800">您共答了{{problemNumber}}道题，正确率{{ (rate * 100).toFixed(2) }}%</p>
+    <button @click="back" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+      返回首页
+    </button>
   </div>
 </template>
 
 <script lang="ts">
 import {computed, onMounted} from "vue";
-import { getSentence, getDifferentPoetry } from "../api/poetry";
+import { getSentence, getDifferentPoetry, addToFavorite } from "../api/poetry";
 import { defineComponent, ref } from 'vue';
 import {useRoute, useRouter} from 'vue-router'
 import {ElMessage} from "element-plus";
+import {addRate} from "../api/user";
 
 export interface Poetry {
   id: number;
@@ -191,6 +201,16 @@ export default defineComponent({
     const counttext = ref('准备好了吗？');
 
     const ans = ref<string>()
+
+    const problemNumber = computed(() => {
+      if (level.value === "LOW")
+        return 10;
+      else if (level.value === "MID")
+        return 20;
+      else return 30;
+    })
+    const currentNumber = ref(0)
+    const correct = ref(0)
 
     const gridClass = computed(() => {
       if (currentProblem.value === '九宫格')
@@ -433,8 +453,18 @@ export default defineComponent({
     };
 
 
+    const finished = ref(false)
     const nextSentence = () => {
-      display();
+      console.log(correct.value, problemNumber.value)
+      if (currentNumber.value !== problemNumber.value - 1) {
+        display();
+        currentNumber.value += 1
+      } else {
+        finished.value = true
+        rate.value = correct.value / problemNumber.value
+        rate.value = parseFloat(rate.value.toFixed(4))
+        saveRate(rate.value)
+      }
       selectedIndexes.value = []
       words.value = []
       disturb.value = []
@@ -443,6 +473,14 @@ export default defineComponent({
       input.value = ""
       showAnswer.value = false
       skip.value = true;
+    }
+
+    const rate = ref(0.0)
+    const saveRate = async (rate: number) => {
+      const res = await addRate(rate)
+      if (res.data.code === '400') {
+        ElMessage.error("历史记录保存出错")
+      }
     }
 
     const selectedIndexes = ref<number[]>([]);
@@ -465,18 +503,21 @@ export default defineComponent({
         input.value = selectedIndexes.value.map(index => words.value[index]).join('')
         if (input.value === displaySentence.value?.prev || input.value === displaySentence.value?.next){
           message.value = {status: "success", message: "答对了，恭喜你！"}
+          correct.value += 1
         } else {
           message.value = {status: "failure", message: "答错了，真可惜。"}
         }
       } else if (currentProblem.value === "上句空") {
         if (input.value === displaySentence.value?.prev) {
           message.value = {status: "success", message: "答对了，恭喜你！"}
+          correct.value += 1
         } else {
           message.value = {status: "failure", message: "答错了，真可惜。"}
         }
       } else if (currentProblem.value === "下句空") {
         if (input.value === displaySentence.value?.next) {
           message.value = {status: "success", message: "答对了，恭喜你！"}
+          correct.value += 1
         } else {
           message.value = {status: "failure", message: "答错了，真可惜。"}
         }
@@ -514,7 +555,34 @@ export default defineComponent({
         getPoetryList(level.value, type, size.value)
       })
       startCountdown(); // 开始倒计时
+      finished.value = false;
     });
+
+    // 添加收藏
+    const favoriteMessage = ref<Message>({status:"", message: ""})
+    const addFavorite = async () => {
+      try{
+        if (currentPoetry.value) {
+          const res = await addToFavorite(currentPoetry.value.id);
+          if (res.data.code === '000') {
+            favoriteMessage.value.status = "success";
+            favoriteMessage.value.message = "收藏成功，请在收藏中心查看";
+            ElMessage.success(favoriteMessage.value.message);
+          } else if (res.data.code === '400'){
+            favoriteMessage.value.status = "failure";
+            favoriteMessage.value.message = res.data.message;
+          }
+        } else {
+          console.log('收藏出错')
+        }
+      } catch (error) {
+        console.log("收藏出错")
+      }
+    }
+
+    const back = () => {
+      router.push('/home')
+    }
 
     return {
       input,
@@ -532,11 +600,17 @@ export default defineComponent({
       ans,
       canCheck,
       currentPoetry,
+      finished,
+      problemNumber,
+      rate,
+
       handleSkip,
       selectWord,
       getPoetryList,
       nextSentence,
       check,
+      addFavorite,
+      back
     };
   }
 });

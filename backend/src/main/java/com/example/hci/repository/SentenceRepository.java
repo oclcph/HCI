@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface SentenceRepository extends JpaRepository<Sentence, Integer> {
     List<Sentence> findByPoetryId(Long id);
-    List<Sentence> findByPrevOrNext(String prev, String next);
+    List<Sentence> findByPrevContainingOrNextContaining(String prev, String next);
 }

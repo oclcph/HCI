@@ -5,14 +5,17 @@ import About from "../views/About.vue";
 import Profile from "../views/Profile.vue";
 import Settings from "../views/Settings.vue";
 import Poetry from "../views/Poetry.vue";
+import Favorite from "../views/Favorite.vue";
 
 const routes: Array<RouteRecordRaw> = [
-    { path: '/', component: Home },
+    { path: '/home', component: Home },
     { path: '/poems', component: Poems },
     { path: '/about', component: About },
     { path: '/settings', component: Settings },
     { path: '/profile', component: Profile },
-    { path: '/poetry', component: Poetry }
+    { path: '/poetry', component: Poetry },
+    { path: '/favorite', component: Favorite },
+    { path: '/', redirect: '/home' },
     // 其他路由...
 ];
 
