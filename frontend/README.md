@@ -29,3 +29,4 @@ frontend/
 ├── tsconfig.json      # TypeScript 配置文件
 ├── README.md          # 此文件
 └── vite.config.ts     # Vite 配置文件
+> 请删除`node_modules`文件夹，重新运行`npm install`。
