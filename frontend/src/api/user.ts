@@ -7,9 +7,11 @@ type LoginInfo = {
 }
 
 type RegisterInfo = {
+    name: string,
     phone: string,
     password: string,
-    confirmPassword: string
+    confirmPassword: string,
+    createTime: string,
 }
 
 export const getUser = () =>{

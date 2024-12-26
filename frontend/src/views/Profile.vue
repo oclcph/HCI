@@ -1,5 +1,6 @@
 <template>
-  <div class="min-h-screen flex flex-col items-center py-10 bg-opacity-90">
+  <div v-if="!isLoading" class="min-h-screen flex flex-col items-center py-10 bg-opacity-90">
+
     <!-- 标题 -->
     <div class="text-center mb-8">
       <h1 class="text-4xl font-extrabold text-[#35524a] drop-shadow-lg" style="font-family: 'ZhiMangXing', serif;">
@@ -15,12 +16,16 @@
         <h2 class="text-2xl font-semibold text-[#35524a] mb-4" style="font-family: 'ZhiMangXing', serif;">个人信息</h2>
         <div class="space-y-4 pl-4">
           <div class="flex items-center">
+            <i class="fas fa-envelope text-[#35524a] mr-3"></i>
+            <p class="text-[#4a6a67]" style="font-family: 'KaiTi', serif;">用户名: {{ user.name }}</p>
+          </div>
+          <div class="flex items-center">
             <i class="fas fa-user text-[#35524a] mr-3"></i>
             <p class="text-[#4a6a67]" style="font-family: 'KaiTi', serif;">注册手机号: {{ phone }}</p>
           </div>
           <div class="flex items-center">
             <i class="fas fa-envelope text-[#35524a] mr-3"></i>
-            <p class="text-[#4a6a67]" style="font-family: 'KaiTi', serif;">邮箱: {{ user.email }}</p>
+            <p class="text-[#4a6a67]" style="font-family: 'KaiTi', serif;">诗龄: {{ displayTime }}</p>
           </div>
         </div>
       </div>
@@ -70,8 +75,10 @@ import { getUser } from "../api/user";
 import LineChart from "../components/LineChart.vue";
 
 interface User {
+  name: string,
   phone: string;
   password: string;
+  createTime: string;
   rates: number[];
 }
 
@@ -88,9 +95,30 @@ export default defineComponent({
   name: "Profile",
   components: {LineChart},
   setup() {
-    const user = ref<User>({phone: "", password: "", rates: []});
+    const user = ref<User>({name:"", phone: "", password: "", rates: [], createTime: ""});
     const rates = ref<number[]>([])
     const phone = ref<string>("")
+
+    const isLoading = ref<boolean>(true);
+
+    const displayTime = computed(() => {
+      const createTime = new Date(user.value.createTime);
+      const now = new Date();
+
+      const diffInMilliseconds = now.getTime() - createTime.getTime();
+      const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
+      const diffInMonths = Math.floor(diffInDays / 30);
+      const diffInYears = Math.floor(diffInDays / 365);
+
+      if (diffInYears > 0) {
+        return `${diffInYears} 年`;
+      } else if (diffInMonths > 0) {
+        return `${diffInMonths} 月`;
+      } else {
+        return `${diffInDays} 天`;
+      }
+    });
+
     const labels = computed(() => {
       return createStringList(selectedRange.value)
     })
@@ -98,6 +126,8 @@ export default defineComponent({
     const getUserInfo = async () => {
       const res = await getUser();
       if (res.data.code === '000'){
+        user.value.name = res.data.result.name;
+        user.value.createTime = res.data.result.createTime;
         user.value.phone = res.data.result.phone;
         user.value.password = res.data.result.password;
         user.value.rates = res.data.result.correctRate;
@@ -203,18 +233,21 @@ export default defineComponent({
         ],
       };
     }
-    onMounted(() => {
-      fetchData();
+    onMounted(async () => {
+      await fetchData();
+      isLoading.value = false;
       // updateChartData();
     })
 
     return {
+      isLoading,
       user,
       loading,
       chartData,
       chartOptions,
       selectedRange,
       phone,
+      displayTime,
       updateChartData,
     };
   },

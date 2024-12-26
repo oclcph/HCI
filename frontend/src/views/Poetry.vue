@@ -34,11 +34,15 @@
 
       <div v-else-if="currentProblem === '九宫格' || currentProblem === '十二宫格'" :class="gridClass">
         <div
-            class="flex items-center justify-center w-16 h-16 bg-gray-200 border border-gray-300 rounded cursor-pointer hover:bg-gray-300"
+            class="flex items-center justify-center w-16 h-16 bg-gray-200 border border-gray-300 rounded cursor-pointer"
             v-for="(word, index) in words"
             :key="index"
             @click="!showAnswer && selectWord(index)"
-            :class="{ 'bg-green-300': selectedIndexes.includes(index) }"
+            :class="{
+      'bg-green-300': selectedIndexes.includes(index),
+      'hover:bg-gray-300': !selectedIndexes.includes(index),
+      'hover:bg-green-200': selectedIndexes.includes(index) // 悬停时的不同效果
+    }"
         >
           {{ word }}
         </div>
