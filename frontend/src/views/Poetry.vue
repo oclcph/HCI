@@ -5,7 +5,6 @@
         <div class="animate-fadeIn artistic-text">{{ counttext }}</div>
       </div>
     </transition>
-
     <div class="flex flex-col items-center p-4">
       <!-- 根据 currentProblem 显示内容 -->
       <div v-if="currentProblem === '上句空'" class="flex flex-col items-center">
@@ -458,16 +457,16 @@ export default defineComponent({
 
 
     const finished = ref(false)
-    const nextSentence = () => {
+    const nextSentence = async () => {
       console.log(correct.value, problemNumber.value)
       if (currentNumber.value !== problemNumber.value - 1) {
-        display();
+        await display();
         currentNumber.value += 1
       } else {
         finished.value = true
         rate.value = correct.value / problemNumber.value
         rate.value = parseFloat(rate.value.toFixed(4))
-        saveRate(rate.value)
+        await saveRate(rate.value)
       }
       selectedIndexes.value = []
       words.value = []
