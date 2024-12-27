@@ -33,7 +33,7 @@
 
       <div v-else-if="currentProblem === '九宫格' || currentProblem === '十二宫格'" :class="gridClass">
         <div
-            class="flex items-center justify-center w-16 h-16 bg-gray-200 border border-gray-300 rounded cursor-pointer"
+            class="flex items-center justify-center bg-gray-200 border border-gray-300 rounded cursor-pointer w-24 h-24"
             v-for="(word, index) in words"
             :key="index"
             @click="!showAnswer && selectWord(index)"
@@ -217,9 +217,9 @@ export default defineComponent({
 
     const gridClass = computed(() => {
       if (currentProblem.value === '九宫格')
-        return 'grid grid-cols-3 gap-4'
+        return 'grid grid-cols-3 gap-6'
       else if (currentProblem.value === '十二宫格')
-        return 'grid grid-cols-4 gap-4'
+        return 'grid grid-cols-4 gap-6'
     });
 
     const getPoetryList = (level: string, type:string, size: number) => {
@@ -457,16 +457,16 @@ export default defineComponent({
 
 
     const finished = ref(false)
-    const nextSentence = async () => {
+    const nextSentence = () => {
       console.log(correct.value, problemNumber.value)
       if (currentNumber.value !== problemNumber.value - 1) {
-        await display();
+        display();
         currentNumber.value += 1
       } else {
         finished.value = true
         rate.value = correct.value / problemNumber.value
         rate.value = parseFloat(rate.value.toFixed(4))
-        await saveRate(rate.value)
+        saveRate(rate.value)
       }
       selectedIndexes.value = []
       words.value = []
