@@ -5,7 +5,6 @@
         <div class="animate-fadeIn artistic-text">{{ counttext }}</div>
       </div>
     </transition>
-
     <div class="flex flex-col items-center p-4">
       <!-- 根据 currentProblem 显示内容 -->
       <div v-if="currentProblem === '上句空'" class="flex flex-col items-center">
@@ -34,7 +33,7 @@
 
       <div v-else-if="currentProblem === '九宫格' || currentProblem === '十二宫格'" :class="gridClass">
         <div
-            class="flex items-center justify-center w-16 h-16 bg-gray-200 border border-gray-300 rounded cursor-pointer"
+            class="flex items-center justify-center bg-gray-200 border border-gray-300 rounded cursor-pointer w-24 h-24"
             v-for="(word, index) in words"
             :key="index"
             @click="!showAnswer && selectWord(index)"
@@ -43,6 +42,7 @@
       'hover:bg-gray-300': !selectedIndexes.includes(index),
       'hover:bg-green-200': selectedIndexes.includes(index) // 悬停时的不同效果
     }"
+            style="font-family: 'KaiTi', serif; font-size: 24px;"
         >
           {{ word }}
         </div>
@@ -218,9 +218,9 @@ export default defineComponent({
 
     const gridClass = computed(() => {
       if (currentProblem.value === '九宫格')
-        return 'grid grid-cols-3 gap-4'
+        return 'grid grid-cols-3 gap-6'
       else if (currentProblem.value === '十二宫格')
-        return 'grid grid-cols-4 gap-4'
+        return 'grid grid-cols-4 gap-6'
     });
 
     const getPoetryList = (level: string, type:string, size: number) => {

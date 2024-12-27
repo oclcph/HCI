@@ -23,7 +23,7 @@
         <label for="message" class="block mb-1">消息</label>
         <textarea id="message" v-model="form.message" class="border border-gray-300 p-2 w-full rounded" rows="4" required></textarea>
       </div>
-      <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-200">
+      <button type="submit" class="bg-red-900 text-white py-2 px-4 rounded hover:bg-red-950 transition duration-200">
         提交
       </button>
     </form>
