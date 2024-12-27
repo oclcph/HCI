@@ -42,6 +42,7 @@
       'hover:bg-gray-300': !selectedIndexes.includes(index),
       'hover:bg-green-200': selectedIndexes.includes(index) // 悬停时的不同效果
     }"
+            style="font-family: 'KaiTi', serif; font-size: 24px;"
         >
           {{ word }}
         </div>
