@@ -1,5 +1,18 @@
 <template>
   <div v-if="!finished" class="flex flex-col items-center justify-center h-screen relative overflow-hidden">
+    <!-- 题目提示信息 -->
+    <div v-if="currentProblem" class="bg-brown-500 text-center text-2xl mb-8">
+      <span v-if="currentProblem === '九宫格'" class="text-black">
+        请从以下<span class="text-red-600">9</span>个字中选出<span class="text-red-600">5</span>个组成一句诗词
+      </span>
+      <span v-else-if="currentProblem === '十二宫格'" class="text-black">
+        请从以下<span class="text-red-600">12</span>个字中选出<span class="text-red-600">7</span>个组成一句诗词
+      </span>
+      <span v-else-if="currentProblem === '上句空'|| currentProblem === '下句空'" class="text-black">
+        请将诗句补充完整
+      </span>
+    </div>
+
     <transition name="fade" mode="out-in">
       <div v-if="!isReady" key="intro" class="absolute inset-0 flex flex-col items-center justify-center text-5xl font-bold text-center text-gray-800 bg-transparent">
         <div class="animate-fadeIn artistic-text">{{ counttext }}</div>
@@ -7,7 +20,7 @@
     </transition>
     <div class="flex flex-col items-center p-4">
       <!-- 根据 currentProblem 显示内容 -->
-      <div v-if="currentProblem === '上句空'" class="flex flex-col items-center">
+      <div v-if="currentProblem === '上句空'"  class="flex flex-col items-center">
         <input
             v-model="input"
             class="mb-4 p-2 border border-gray-300 rounded"
@@ -33,16 +46,14 @@
 
       <div v-else-if="currentProblem === '九宫格' || currentProblem === '十二宫格'" :class="gridClass">
         <div
-            class="flex items-center justify-center bg-gray-200 border border-gray-300 rounded cursor-pointer w-24 h-24"
+            class="grid-item"
             v-for="(word, index) in words"
             :key="index"
             @click="!showAnswer && selectWord(index)"
             :class="{
-      'bg-green-300': selectedIndexes.includes(index),
-      'hover:bg-gray-300': !selectedIndexes.includes(index),
-      'hover:bg-green-200': selectedIndexes.includes(index) // 悬停时的不同效果
-    }"
-            style="font-family: 'KaiTi', serif; font-size: 24px;"
+            'selected': selectedIndexes.includes(index) // 添加 'selected' 类来标记选中的字
+          }"
+            style="font-family: 'KaiTi', serif; font-size: 32px;"
         >
           {{ word }}
         </div>
@@ -53,9 +64,7 @@
       </div>
     </div>
 
-
-    <div v-if="isReady" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 w-3/4 bg-white bg-opacity-70 p-4 rounded shadow-md border border-yellow-800"
-    >
+    <div v-if="isReady" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 w-3/4 bg-white bg-opacity-70 p-4 rounded shadow-md border border-yellow-800">
       <!-- 显示答案 -->
       <div
           v-if="showAnswer && isReady && message.status === 'failure'"
@@ -68,10 +77,10 @@
       <div
           class="flex items-center justify-between p-4 rounded transition"
           :class="{
-        'bg-green-100 border-green-700 text-green-800': isChecked && message.status === 'success',
-        'bg-red-100 border-red-700 text-red-800': isChecked && message.status === 'failure',
-        'bg-transparent': !isChecked
-      }"
+          'bg-green-100 border-green-700 text-green-800': isChecked && message.status === 'success',
+          'bg-red-100 border-red-700 text-red-800': isChecked && message.status === 'failure',
+          'bg-transparent': !isChecked
+        }"
       >
         <!-- 跳过按钮或状态信息 -->
         <div>
@@ -92,14 +101,14 @@
         <!-- 确认按钮或下一首诗歌按钮 -->
         <div>
           <button @click="addFavorite"
-                  class="px-4 py-2 text-lg font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition shadow-md mr-4">
+                  class="px-4 py-2 text-lg font-semibold rounded-lg bg-sky-800 text-white hover:bg-sky-900 transition shadow-md mr-4">
             收藏
           </button>
           <button
               v-if="!isChecked && isReady"
               :disabled="!canCheck"
               @click="check"
-              class="px-6 py-2 text-lg font-semibold rounded-lg bg-green-700 text-white hover:bg-green-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition ml-12"
+              class="px-6 py-2 text-lg font-semibold rounded-lg bg-red-900 text-white hover:bg-red-950 disabled:bg-gray-300 disabled:cursor-not-allowed transition ml-12"
           >
             确认
           </button>
@@ -108,9 +117,9 @@
               @click="nextSentence"
               class="px-6 py-2 text-lg font-semibold rounded-lg hover:bg-opacity-80 transition ml-12"
               :class="{
-            'bg-green-700 text-white border-green-900': message.status === 'success',
-            'bg-red-700 text-white border-red-900': message.status === 'failure'
-          }"
+              'bg-green-700 text-white border-green-900': message.status === 'success',
+              'bg-red-700 text-white border-red-900': message.status === 'failure'
+            }"
           >
             继续
           </button>
@@ -669,6 +678,49 @@ p {
 .fade-enter, .fade-leave-to {
   opacity: 0;
   transform: translateY(20px); /* 向下移动 */
+}
+.bg-brown-500 {
+  background-color: transparent;
+  background-image: url("../assets/scroll.png");
+  background-size: 600px 180px;
+  background-repeat: no-repeat;
+  background-position: center;
+  padding: 20px;
+  border-radius: 10px;
+  width: 600px;
+  max-width: 600px;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.grid-item {
+  width: 80px;
+  height: 80px;
+  position: relative;
+  background-image: url('../assets/grid.png'); /* 设置田字格背景图片 */
+  background-size: contain; /* 确保图片完整显示 */
+  background-repeat: no-repeat; /* 不重复背景图片 */
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  justify-content: center;
+  font-family: 'KaiTi', serif; /* 设置字体 */
+  font-size: 32px; /* 设置字体大小 */
+}
+
+.grid-item.selected::after{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(222,184,135, 0.5);
+  border: 1px solid Maroon;
+  pointer-events: none; /* 确保点击事件可以穿透到下面的格子 */
 }
 
 .bg-green-100 {
