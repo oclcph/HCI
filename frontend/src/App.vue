@@ -8,7 +8,7 @@
       <!-- 路由视图，根据路由显示不同页面 -->
       <router-view />
     </main>
-    <Footer v-if="eventBus.footerVisible"/>
+    <Footer v-if="eventBus.footerVisible" class="footer"/>
   </div>
 </template>
 
@@ -17,7 +17,6 @@ import {defineComponent, provide, ref} from 'vue';
 import Header from './components/Header.vue'; // 导入头部组件
 import Footer from "./components/Footer.vue";
 import eventBus from "./router/eventBus";
-// import backgroundImage from './assets/bg.jpg'
 
 export default defineComponent({
   name: 'App',
@@ -54,5 +53,13 @@ body {
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed; /* 固定背景 */
+}
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 30px;
+  padding: 10px; /* 示例内边距 */
 }
 </style>

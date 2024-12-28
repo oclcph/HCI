@@ -80,7 +80,7 @@ export default defineComponent({
           phone.value = '';
           password.value = '';
           confirmPassword.value = '';
-          ElMessage.success('登陆成功')
+          ElMessage.success('登录成功')
           const token = res.data.result
           sessionStorage.setItem('token', token)
         } else if (res.data.code === '400'){

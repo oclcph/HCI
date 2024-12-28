@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!finished" class="flex flex-col items-center justify-center h-screen relative overflow-hidden">
+  <div v-if="!finished" class="flex flex-col items-center justify-center relative overflow-hidden">
     <!-- 题目提示信息 -->
     <div v-if="currentProblem" class="bg-brown-500 text-center text-2xl mb-8">
       <span v-if="currentProblem === '九宫格'" class="text-black">
@@ -14,13 +14,13 @@
     </div>
 
     <transition name="fade" mode="out-in">
-      <div v-if="!isReady" key="intro" class="absolute inset-0 flex flex-col items-center justify-center text-5xl font-bold text-center text-gray-800 bg-transparent">
+      <div v-if="!isReady" key="intro" class="fixed mt-100 mb-100 inset-0 flex flex-col items-center justify-center text-5xl font-bold text-center text-gray-800 bg-transparent">
         <div class="animate-fadeIn artistic-text">{{ counttext }}</div>
       </div>
     </transition>
-    <div class="mt-4 mb-12 flex flex-col items-center p-4">
+    <div class="flex flex-col items-center">
       <!-- 根据 currentProblem 显示内容 -->
-      <div v-if="currentProblem === '上句空'"  class="flex flex-col items-center">
+      <div v-if="currentProblem === '上句空'"  class="flex flex-col items-center p-4 fixed top-2/4">
         <input
             v-model="input"
             class="mb-4 p-2 border border-gray-300 rounded"
@@ -32,7 +32,7 @@
         </div>
       </div>
 
-      <div v-if="currentProblem === '下句空'" class="flex flex-col items-center">
+      <div v-if="currentProblem === '下句空'" class="flex flex-col items-center p-4 fixed top-2/4">
         <div class="text-lg">
           上半句: {{ displaySentence?.prev }}
         </div>
@@ -44,7 +44,7 @@
         />
       </div>
 
-      <div v-else-if="currentProblem === '九宫格' || currentProblem === '十二宫格'" :class="gridClass">
+      <div v-else-if="currentProblem === '九宫格' || currentProblem === '十二宫格'" :class="[gridClass, 'flex flex-col items-center p-4 fixed top-1/3']">
         <div
             class="grid-item"
             v-for="(word, index) in words"
@@ -59,13 +59,13 @@
         </div>
       </div>
 
-      <div class="mt-4 text-lg" v-if="isReady && (currentProblem === '九宫格' || currentProblem === '十二宫格')">
+      <div class="mt-4 text-lg flex flex-col items-center p-4 fixed top-2/3" v-if="isReady && (currentProblem === '九宫格' || currentProblem === '十二宫格')">
         选中的字: {{ selectedIndexes.map(index => words[index]).join(' ') }}
       </div>
     </div>
 
 
-    <div v-if="isReady" class="relative bottom-8 left-100 transform w-3/4 bg-white bg-opacity-70 p-4 rounded shadow-md border border-yellow-800">
+    <div v-if="isReady" class="fixed bottom-12 left-100 transform w-3/4 bg-white bg-opacity-70 p-4 rounded shadow-md border border-yellow-800">
       <!-- 显示答案 -->
       <div
           v-if="showAnswer && isReady && message.status === 'failure'"
@@ -109,7 +109,7 @@
               v-if="!isChecked && isReady"
               :disabled="!canCheck"
               @click="check"
-              class="px-6 py-2 text-lg font-semibold rounded-lg bg-red-900 text-white hover:bg-red-950 disabled:bg-gray-300 disabled:cursor-not-allowed transition ml-12"
+              class="px-6 py-2 text-lg font-semibold rounded-lg bg-red-900 text-white hover:bg-red-950 disabled:bg-stone-300 disabled:cursor-not-allowed transition ml-12"
           >
             确认
           </button>
