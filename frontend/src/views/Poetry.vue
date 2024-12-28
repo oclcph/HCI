@@ -18,7 +18,7 @@
         <div class="animate-fadeIn artistic-text">{{ counttext }}</div>
       </div>
     </transition>
-    <div class="flex flex-col items-center p-4">
+    <div class="mt-4 mb-12 flex flex-col items-center p-4">
       <!-- 根据 currentProblem 显示内容 -->
       <div v-if="currentProblem === '上句空'"  class="flex flex-col items-center">
         <input
@@ -59,12 +59,13 @@
         </div>
       </div>
 
-      <div class="mt-4 text-lg" v-if="selectedIndexes.length > 0">
+      <div class="mt-4 text-lg" v-if="isReady && (currentProblem === '九宫格' || currentProblem === '十二宫格')">
         选中的字: {{ selectedIndexes.map(index => words[index]).join(' ') }}
       </div>
     </div>
 
-    <div v-if="isReady" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 w-3/4 bg-white bg-opacity-70 p-4 rounded shadow-md border border-yellow-800">
+
+    <div v-if="isReady" class="relative bottom-8 left-100 transform w-3/4 bg-white bg-opacity-70 p-4 rounded shadow-md border border-yellow-800">
       <!-- 显示答案 -->
       <div
           v-if="showAnswer && isReady && message.status === 'failure'"
