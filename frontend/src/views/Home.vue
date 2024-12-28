@@ -43,9 +43,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import {defineComponent, onMounted, ref} from 'vue';
 import {useRouter} from "vue-router";
 import {ElMessage} from "element-plus";
+import eventBus from "../router/eventBus";
 
 export default defineComponent({
   name: 'HomePage',
@@ -69,6 +70,9 @@ export default defineComponent({
         }
       }
     };
+    onMounted(() => {
+      eventBus.setFooterVisible(true);
+    })
     return {
       handleClick,
     };

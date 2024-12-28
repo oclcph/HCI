@@ -3,6 +3,7 @@ import {defineComponent, onMounted, ref} from "vue";
 import {getFavorite, deleteFavorite} from "../api/poetry";
 import {Poetry} from "./Poetry.vue";
 import {ElMessage} from "element-plus";
+import eventBus from "../router/eventBus";
 
 export default defineComponent({
   name: "Favorite",
@@ -45,8 +46,10 @@ export default defineComponent({
       }
     }
 
-    onMounted(() => {
-      getAllFavorite();
+    onMounted(async () => {
+      eventBus.setFooterVisible(false)
+      await getAllFavorite();
+      eventBus.setFooterVisible(true);
     })
 
     return {

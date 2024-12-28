@@ -6,7 +6,7 @@ import { ElMessage } from 'element-plus';
 
 export default defineComponent({
   setup() {
-    const isLoggedIn = ref(false); // 创建响应式状态
+    const isLoggedIn = ref(inject('isLoggedIn')); // 创建响应式状态
     const currentPage = ref(inject('currentPage'));
     const showDropdown = ref(false);
     const dropdownMenu = ref<HTMLDivElement | null>(null);

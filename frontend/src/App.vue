@@ -26,9 +26,10 @@ export default defineComponent({
   },
   data() {
     const currentPage = ref('home'); // 默认页面
+    const isLoggedIn = ref(false);
 
     provide('currentPage', currentPage); // 提供 currentPage
-
+    provide('isLoggedIn', isLoggedIn);
     return {
       currentPage,
       eventBus,

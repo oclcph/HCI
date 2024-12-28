@@ -80,7 +80,7 @@ import {computed, defineComponent, inject, onMounted, ref} from 'vue';
 import { getUser } from "../api/user";
 import LineChart from "../components/LineChart.vue";
 import {useRouter} from "vue-router";
-
+import eventBus from "../router/eventBus";
 interface User {
   name: string,
   phone: string;
@@ -110,10 +110,12 @@ export default defineComponent({
     const isLoading = ref<boolean>(true);
 
     const currentPage = ref(inject('currentPage'))
+    const isLoggedIn = ref(inject('isLoggedIn'))
 
     const logout = () => {
       sessionStorage.setItem('token', '')
       currentPage.value = 'home'
+      isLoggedIn.value = false
       console.log(currentPage.value)
       router.push('/')
     };
@@ -254,6 +256,7 @@ export default defineComponent({
     onMounted(async () => {
       await fetchData();
       isLoading.value = false;
+      eventBus.setFooterVisible(true)
       // updateChartData();
     })
 

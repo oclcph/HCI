@@ -145,7 +145,7 @@ import { defineComponent, ref } from 'vue';
 import {useRoute, useRouter} from 'vue-router'
 import {ElMessage} from "element-plus";
 import {addRate} from "../api/user";
-
+import eventBus from "../router/eventBus"
 export interface Poetry {
   id: number;
   title: string;
@@ -571,6 +571,7 @@ export default defineComponent({
       })
       startCountdown(); // 开始倒计时
       finished.value = false;
+      eventBus.setFooterVisible(true);
     });
 
     // 添加收藏

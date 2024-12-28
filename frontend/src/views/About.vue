@@ -40,8 +40,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
-
+import {defineComponent, onMounted, ref} from 'vue';
+import eventBus from "../router/eventBus";
 export default defineComponent({
   name: 'About',
   setup() {
@@ -60,6 +60,9 @@ export default defineComponent({
       form.value.message = '';
     };
 
+    onMounted(() => {
+      eventBus.setFooterVisible(true)
+    })
     return {
       form,
       submitForm,
