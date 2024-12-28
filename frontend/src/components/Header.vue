@@ -218,11 +218,6 @@ export default defineComponent({
                        @click="() => { toggleDropdown(); setCurrentPage('profile') }">
             个人中心
           </router-link>
-          <router-link to="/settings"
-                       class="block px-4 py-2 hover:bg-[#d7c08d] text-[#6f1d1b] text-sm font-serif"
-                       @click="() => { toggleDropdown(); setCurrentPage('settings') }">
-            设置
-          </router-link>
           <router-link to="/"
                        @click="() => { logout(); setCurrentPage('home');}"
                        class="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100 text-sm font-serif">
