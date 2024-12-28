@@ -41,24 +41,22 @@
         <h2 class="text-2xl font-bold text-[#35524a] mb-4" style="font-family: 'ZhiMangXing', serif;">最近正确率</h2>
 
         <!-- 切换按钮组 -->
-        <div class="relative w-52 h-12 bg-[#e4f0e2] rounded-full shadow-md border border-[#4a6a67] flex items-center">
+        <div class="relative w-52 h-12 bg-[#a8c8b2] rounded-full shadow-md border border-[#4a6a67] flex items-center">
           <!-- 滑块 -->
           <div
-              class="absolute w-1/2 h-full bg-[#7c9a8d] rounded-full transition-transform"
-          :class="{ 'translate-x-0': selectedRange === 10, 'translate-x-full': selectedRange === 30 }"
+              class="absolute w-1/2 h-full bg-[#35524a] rounded-full transition-transform"
+          :class="{ 'translate-x-0': selectedRange == 10, 'translate-x-full': selectedRange == 30 }"
           ></div>
           <!-- 按钮 -->
           <button
               class="w-1/2 h-full text-center text-white font-bold focus:outline-none z-10"
               @click="updateChartData(10)"
-              :class="{ 'text-white': selectedRange === 10, 'text-[#35524a]': selectedRange !== 10 }"
           >
             近十次
           </button>
           <button
               class="w-1/2 h-full text-center text-white font-bold focus:outline-none z-10"
               @click="updateChartData(30)"
-              :class="{ 'text-white': selectedRange === 30, 'text-[#35524a]': selectedRange !== 30 }"
           >
             近三十次
           </button>
@@ -164,7 +162,7 @@ export default defineComponent({
       labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
       datasets: [
         {
-          label: '正确率',
+          label: '正确率变化',
           backgroundColor: 'rgba(75, 192, 192, 0.2)',
           borderColor: 'rgba(75, 192, 192, 1)',
           data: [0],
@@ -193,7 +191,16 @@ export default defineComponent({
           border: {
             color: '#111111',
             size: 2,
-          }
+          },
+          title: {
+            display: true,
+            text: '次数', // 纵轴标题
+            color: '#333333', // 标题颜色
+            font: {
+              size: 16, // 标题字体大小
+              weight: 'bold', // 标题加粗
+            },
+          },
         },
         y: {
           min: 0,
@@ -211,7 +218,16 @@ export default defineComponent({
           border: {
             color: '#111111',
             size: 2,
-          }
+          },
+          title: {
+            display: true,
+            text: '正确率', // 纵轴标题
+            color: '#333333', // 标题颜色
+            font: {
+              size: 16, // 标题字体大小
+              weight: 'bold', // 标题加粗
+            },
+          },
         },
       },
     });
@@ -244,7 +260,7 @@ export default defineComponent({
     const updateChartData = (quantity: number) => {
       selectedRange.value = quantity;
       rates.value = user.value.rates.slice(-quantity);
-      console.log(labels.value)
+      console.log(selectedRange.value)
       chartData.value = {
         ...chartData.value,
         labels: labels.value,
