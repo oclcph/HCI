@@ -71,7 +71,8 @@ export default defineComponent({
       }
     };
     onMounted(() => {
-      eventBus.setFooterVisible(true);
+      eventBus.setFixedFooterVisible(true);
+      eventBus.setRelativeFooterVisible(false);
     })
     return {
       handleClick,

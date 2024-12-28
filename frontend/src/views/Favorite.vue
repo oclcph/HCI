@@ -47,9 +47,10 @@ export default defineComponent({
     }
 
     onMounted(async () => {
-      eventBus.setFooterVisible(false)
+      eventBus.setRelativeFooterVisible(false)
+      eventBus.setFixedFooterVisible(false)
       await getAllFavorite();
-      eventBus.setFooterVisible(true);
+      eventBus.setRelativeFooterVisible(true);
     })
 
     return {

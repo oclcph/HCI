@@ -256,7 +256,8 @@ export default defineComponent({
     onMounted(async () => {
       await fetchData();
       isLoading.value = false;
-      eventBus.setFooterVisible(true)
+      eventBus.setFixedFooterVisible(false)
+      eventBus.setRelativeFooterVisible(true)
       // updateChartData();
     })
 

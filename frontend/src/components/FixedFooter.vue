@@ -1,4 +1,4 @@
-<!-- src/components/Footer.vue -->
+<!-- src/components/FixedFooter.vue -->
 <template>
   <footer class="border-t pt-1 text-center text-gray-600">
     © 2024 古诗词平台. 版权所有.
@@ -9,7 +9,7 @@
 import { defineComponent } from 'vue';
 
 export default defineComponent({
-  name: 'Footer',
+  name: 'FixedFooter',
 });
 </script>
 

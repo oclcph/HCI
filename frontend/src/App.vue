@@ -8,21 +8,24 @@
       <!-- 路由视图，根据路由显示不同页面 -->
       <router-view />
     </main>
-    <Footer v-if="eventBus.footerVisible" class="footer"/>
+    <FixedFooter v-if="eventBus.fixedFooterVisible" class="fixedFooter"/>
+    <RelativeFooter v-if="eventBus.relativeFooterVisible" class="relativeFooter"/>
   </div>
 </template>
 
 <script lang="ts">
 import {defineComponent, provide, ref} from 'vue';
 import Header from './components/Header.vue'; // 导入头部组件
-import Footer from "./components/Footer.vue";
+import FixedFooter from "./components/FixedFooter.vue";
+import RelativeFooter from "./components/RelativeFooter.vue";
 import eventBus from "./router/eventBus";
 
 export default defineComponent({
   name: 'App',
   components: {
     Header,  // 注册 Header 组件
-    Footer,
+    FixedFooter,
+    RelativeFooter,
   },
   data() {
     const currentPage = ref('home'); // 默认页面
@@ -55,8 +58,16 @@ body {
   background-repeat: no-repeat;
   background-attachment: fixed; /* 固定背景 */
 }
-.footer {
+.fixedFooter {
   position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 30px;
+  padding: 10px; /* 示例内边距 */
+}
+.relativeFooter {
+  position: relative;
   bottom: 0;
   left: 0;
   right: 0;

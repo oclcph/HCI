@@ -1,10 +1,14 @@
 import { reactive } from 'vue';
 
 const eventBus = reactive({
-    footerVisible: false,
-    setFooterVisible(value: boolean) {
-        this.footerVisible = value;
+    fixedFooterVisible: false,
+    relativeFooterVisible: false,
+    setFixedFooterVisible(value: boolean) {
+        this.fixedFooterVisible = value;
     },
+    setRelativeFooterVisible(value: boolean) {
+        this.relativeFooterVisible = value;
+    }
 });
 
 export default eventBus;

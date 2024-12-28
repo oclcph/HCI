@@ -121,12 +121,13 @@ export default defineComponent({
     }
 
     onMounted(async () => {
-      eventBus.setFooterVisible(false);
+      eventBus.setRelativeFooterVisible(false);
+      eventBus.setFixedFooterVisible(false);
       await getAllPoems();
       await nextTick();
       isLoaded.value = true;
       await initAddedPoems();
-      eventBus.setFooterVisible(true);
+      eventBus.setRelativeFooterVisible(true);
     })
 
     return {

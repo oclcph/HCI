@@ -571,7 +571,8 @@ export default defineComponent({
       })
       startCountdown(); // 开始倒计时
       finished.value = false;
-      eventBus.setFooterVisible(true);
+      eventBus.setRelativeFooterVisible(false);
+      eventBus.setFixedFooterVisible(true);
     });
 
     // 添加收藏
