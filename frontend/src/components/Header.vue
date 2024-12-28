@@ -126,6 +126,7 @@ export default defineComponent({
       isLoggedIn.value = false;
       showDropdown.value = false; // 登出时隐藏下拉框
       sessionStorage.setItem('token', '')
+      ElMessage.success("退出登录成功");
     };
 
     const setCurrentPage = (page: string) => {

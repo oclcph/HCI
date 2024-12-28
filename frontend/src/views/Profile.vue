@@ -81,6 +81,8 @@ import { getUser } from "../api/user";
 import LineChart from "../components/LineChart.vue";
 import {useRouter} from "vue-router";
 import eventBus from "../router/eventBus";
+import { ElMessage } from 'element-plus';
+
 interface User {
   name: string,
   phone: string;
@@ -117,6 +119,7 @@ export default defineComponent({
       currentPage.value = 'home'
       isLoggedIn.value = false
       console.log(currentPage.value)
+      ElMessage.success("退出登录成功")
       router.push('/')
     };
 
