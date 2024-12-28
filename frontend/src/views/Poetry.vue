@@ -1,7 +1,7 @@
 <template>
   <div v-if="!finished" class="flex flex-col items-center justify-center relative overflow-hidden">
     <!-- 题目提示信息 -->
-    <div v-if="currentProblem" class="bg-brown-500 text-center text-2xl mb-8">
+    <div v-if="currentProblem" class="bg-brown-500 text-center text-2xl mt-16">
       <span v-if="currentProblem === '九宫格'" class="text-black">
         请从以下<span class="text-red-600">9</span>个字中选出<span class="text-red-600">5</span>个组成一句诗词
       </span>
@@ -23,28 +23,28 @@
       <div v-if="currentProblem === '上句空'"  class="flex flex-col items-center p-4 fixed top-2/4">
         <input
             v-model="input"
-            class="mb-4 p-2 border border-gray-300 rounded"
+            class="mb-4 p-2 border border-gray-300 rounded text-xl"
             :disabled="showAnswer"
             placeholder="请输入上半句"
         />
-        <div class="text-lg">
+        <div class="text-xl">
           下半句: {{ displaySentence?.next }}
         </div>
       </div>
 
       <div v-if="currentProblem === '下句空'" class="flex flex-col items-center p-4 fixed top-2/4">
-        <div class="text-lg">
+        <div class="text-xl">
           上半句: {{ displaySentence?.prev }}
         </div>
         <input
             v-model="input"
-            class="mb-4 p-2 border border-gray-300 rounded"
+            class="mb-4 p-2 border border-gray-300 rounded text-xl"
             :disabled="showAnswer"
             placeholder="请输入下半句"
         />
       </div>
 
-      <div v-else-if="currentProblem === '九宫格' || currentProblem === '十二宫格'" :class="[gridClass, 'flex flex-col items-center p-4 fixed top-1/3']">
+      <div v-else-if="currentProblem === '九宫格' || currentProblem === '十二宫格'" :class="[gridClass, 'flex flex-col items-center p-4 fixed']" style="top: 350px">
         <div
             class="grid-item"
             v-for="(word, index) in words"
@@ -59,17 +59,17 @@
         </div>
       </div>
 
-      <div class="mt-4 text-lg flex flex-col items-center p-4 fixed top-2/3" v-if="isReady && (currentProblem === '九宫格' || currentProblem === '十二宫格')">
+      <div class="mt-4 text-lg flex flex-col items-center p-4 fixed" style="top: 650px" v-if="isReady && (currentProblem === '九宫格' || currentProblem === '十二宫格')">
         选中的字: {{ selectedIndexes.map(index => words[index]).join(' ') }}
       </div>
     </div>
 
 
-    <div v-if="isReady" class="fixed bottom-12 left-100 transform w-3/4 bg-white bg-opacity-70 p-4 rounded shadow-md border border-yellow-800">
+    <div v-if="isReady" class="fixed bottom-20 left-100 transform w-3/4 bg-white bg-opacity-70 p-4 rounded shadow-md border border-yellow-800">
       <!-- 显示答案 -->
       <div
           v-if="showAnswer && isReady && message.status === 'failure'"
-          class="mt-4 text-lg text-red-700"
+          class="mt-0 text-lg text-red-700 text-center"
       >
         正确答案为：{{ ans }}
       </div>
@@ -86,17 +86,18 @@
         <!-- 跳过按钮或状态信息 -->
         <div>
           <button
-              v-if="!isChecked && isReady"
+              v-if="isReady"
               :disabled="!skip || isChecked"
               @click="handleSkip"
               class="px-6 py-2 text-lg font-semibold rounded-lg bg-yellow-700 text-white hover:bg-yellow-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition mr-16"
           >
             跳过
           </button>
-          <div v-else>
-            ——{{ currentPoetry?.dynasty }} · {{ currentPoetry?.author }} · 《{{ currentPoetry?.title }}》
-            <div>{{ message.message }}</div>
-          </div>
+        </div>
+
+        <div v-if="isChecked" style="margin-left: 100px; margin-right: 20px;">
+          ——{{ currentPoetry?.dynasty }} · {{ currentPoetry?.author }} · 《{{ currentPoetry?.title }}》
+          <div>{{ message.message }}</div>
         </div>
 
         <!-- 确认按钮或下一首诗歌按钮 -->
