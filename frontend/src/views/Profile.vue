@@ -12,24 +12,30 @@
     <!-- 内容展示 -->
     <div class="w-full max-w-4xl bg-[#f4ede4] p-8 rounded-lg shadow-xl border-4 border-[#35524a]">
       <!-- 个人信息部分 -->
-      <div class="info-card mb-8">
-        <h2 class="text-2xl font-semibold text-[#35524a] mb-4" style="font-family: 'ZhiMangXing', serif;">个人信息</h2>
-        <div class="space-y-4 pl-4">
-          <div class="flex items-center">
-            <i class="fas fa-envelope text-[#35524a] mr-3"></i>
-            <p class="text-[#4a6a67]" style="font-family: 'KaiTi', serif;">用户名: {{ user.name }}</p>
-          </div>
-          <div class="flex items-center">
-            <i class="fas fa-user text-[#35524a] mr-3"></i>
-            <p class="text-[#4a6a67]" style="font-family: 'KaiTi', serif;">注册手机号: {{ phone }}</p>
-          </div>
-          <div class="flex items-center">
-            <i class="fas fa-envelope text-[#35524a] mr-3"></i>
-            <p class="text-[#4a6a67]" style="font-family: 'KaiTi', serif;">诗龄: {{ displayTime }}</p>
+      <div class="info-card mb-8 flex items-center justify-between">
+        <div class="flex-1">
+          <h2 class="text-2xl font-semibold text-[#35524a] mb-4" style="font-family: 'ZhiMangXing', serif;">个人信息</h2>
+          <div class="space-y-4 pl-4">
+            <div class="flex items-center">
+              <i class="fas fa-envelope text-[#35524a] mr-3"></i>
+              <p class="text-[#4a6a67]" style="font-family: 'KaiTi', serif;">用户名: {{ user.name }}</p>
+            </div>
+            <div class="flex items-center">
+              <i class="fas fa-user text-[#35524a] mr-3"></i>
+              <p class="text-[#4a6a67]" style="font-family: 'KaiTi', serif;">注册手机号: {{ phone }}</p>
+            </div>
+            <div class="flex items-center">
+              <i class="fas fa-envelope text-[#35524a] mr-3"></i>
+              <p class="text-[#4a6a67]" style="font-family: 'KaiTi', serif;">诗龄: {{ displayTime }}</p>
+            </div>
           </div>
         </div>
-      </div>
 
+        <!-- 退出登录按钮 -->
+        <button @click="logout" class="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700 transition-colors ml-4">
+          退出登录
+        </button>
+      </div>
       <!-- 最近正确率 -->
       <div class="accuracy-chart">
         <h2 class="text-2xl font-bold text-[#35524a] mb-4" style="font-family: 'ZhiMangXing', serif;">最近正确率</h2>
@@ -70,9 +76,10 @@
 
 
 <script lang="ts">
-import {computed, defineComponent, onMounted, ref} from 'vue';
+import {computed, defineComponent, inject, onMounted, ref} from 'vue';
 import { getUser } from "../api/user";
 import LineChart from "../components/LineChart.vue";
+import {useRouter} from "vue-router";
 
 interface User {
   name: string,
@@ -99,7 +106,18 @@ export default defineComponent({
     const rates = ref<number[]>([])
     const phone = ref<string>("")
 
+    const router = useRouter()
     const isLoading = ref<boolean>(true);
+
+    const currentPage = ref(inject('currentPage'))
+
+    const logout = () => {
+      sessionStorage.setItem('token', '')
+      currentPage.value = 'home'
+      console.log(currentPage.value)
+      router.push('/')
+    };
+
 
     const displayTime = computed(() => {
       const createTime = new Date(user.value.createTime);
@@ -248,6 +266,7 @@ export default defineComponent({
       selectedRange,
       phone,
       displayTime,
+      logout,
       updateChartData,
     };
   },

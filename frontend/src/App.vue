@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import {defineComponent, provide, ref} from 'vue';
 import Header from './components/Header.vue'; // 导入头部组件
 import Footer from "./components/Footer.vue";
 import eventBus from "./router/eventBus";
@@ -26,9 +26,15 @@ export default defineComponent({
     Footer,
   },
   data() {
+    const currentPage = ref('home'); // 默认页面
+
+    provide('currentPage', currentPage); // 提供 currentPage
+
     return {
+      currentPage,
       eventBus,
     };
+
   },
 });
 </script>

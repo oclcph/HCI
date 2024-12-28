@@ -1,15 +1,13 @@
 <script lang="ts">
-import {defineComponent, onMounted, ref, onBeforeUnmount, computed} from 'vue';
-import { useUserStore } from '../store/userStore';
+import {defineComponent, onMounted, ref, onBeforeUnmount, computed, inject} from 'vue';
 import {getUser, loginApi, registerApi } from "../api/user";
 import {useRouter} from "vue-router";
 import { ElMessage } from 'element-plus';
 
 export default defineComponent({
   setup() {
-    const userStore = useUserStore();
     const isLoggedIn = ref(false); // 创建响应式状态
-    const currentPage = ref('home');
+    const currentPage = ref(inject('currentPage'));
     const showDropdown = ref(false);
     const dropdownMenu = ref<HTMLDivElement | null>(null);
     const showLogin = ref(false)
@@ -125,8 +123,6 @@ export default defineComponent({
     }
 
     const logout = () => {
-      userStore.logout();
-      console.log(userStore.isLoggedIn);
       isLoggedIn.value = false;
       showDropdown.value = false; // 登出时隐藏下拉框
       sessionStorage.setItem('token', '')
