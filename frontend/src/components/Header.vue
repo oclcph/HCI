@@ -236,13 +236,13 @@ export default defineComponent({
           <h2 class="text-2xl font-semibold text-gray-700 mb-6 text-center">登录</h2>
           <form @submit.prevent="login">
             <div class="mb-4">
-              <label for="phone" class="block text-sm font-medium text-gray-700">手机号码/用户名</label>
+              <label for="phone" class="block text-sm font-medium text-gray-700">手机号码</label>
               <input
                   id="phone"
                   v-model="phone"
                   type="tel"
                   class="w-full mt-1 p-3 border border-gray-300 rounded-md text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  placeholder="请输入手机号码/用户名"
+                  placeholder="请输入手机号码"
                   required
               />
               <label v-if="hasTelInput && !telLegal" for="tel" class="text-red-500 text-sm">
