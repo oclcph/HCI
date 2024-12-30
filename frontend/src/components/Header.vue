@@ -35,6 +35,10 @@ export default defineComponent({
       return !hasRegisterNameInput || !hasTelInput || !telLegal.value || !hasPasswordInput || !hasConfirmPasswordInput || !isPasswordIdentical.value;
     })
 
+    const loginDisabled = computed(() => {
+      return !hasTelInput || !telLegal.value || !hasPasswordInput;
+    })
+
     const closeDropdown = (event: MouseEvent) => {
       if (
           dropdownMenu.value &&
@@ -62,6 +66,7 @@ export default defineComponent({
     };
 
     const showRegisterPage = () => {
+      registerName.value = ''
       showLogin.value = false;
       showRegister.value = true;
       phone.value = '';
@@ -145,6 +150,7 @@ export default defineComponent({
       phone,
       password,
       showLogin,
+      loginDisabled,
 
       /* 注册 */
       registerName,
@@ -236,7 +242,7 @@ export default defineComponent({
           <h2 class="text-2xl font-semibold text-gray-700 mb-6 text-center">登录</h2>
           <form @submit.prevent="login">
             <div class="mb-4">
-              <label for="phone" class="block text-sm font-medium text-gray-700">手机号码</label>
+              <label for="phone" class="block text-sm font-medium text-gray-700">手机号码<span class="text-red-500">*</span></label>
               <input
                   id="phone"
                   v-model="phone"
@@ -250,7 +256,7 @@ export default defineComponent({
               </label>
             </div>
             <div class="mb-4">
-              <label for="password" class="block text-sm font-medium text-gray-700">密码</label>
+              <label for="password" class="block text-sm font-medium text-gray-700">密码<span class="text-red-500">*</span></label>
               <div class="relative">
                 <input
                     id="password"
