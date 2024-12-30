@@ -4,7 +4,7 @@
 
     <div class="contact-info mb-6">
       <h2 class="text-2xl font-semibold mb-2">联系信息</h2>
-      <p>公司名称: <strong>古诗词平台</strong></p>
+      <p>公司名称: <strong>格韵诗途</strong></p>
       <p>地址: <strong>江苏省南京市汉口路22号</strong></p>
       <p>电话: <strong>123-456-7890</strong></p>
       <p>电子邮件: <strong>contact@example.com</strong></p>

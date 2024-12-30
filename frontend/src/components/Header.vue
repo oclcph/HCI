@@ -181,7 +181,7 @@ export default defineComponent({
 <template>
   <header class="flex justify-between p-6 bg-[#6f1d1b] text-[#d0b28d] text-lg">
     <router-link to="/home" class="logo text-[#c8b68d] font-serif font-extrabold text-3xl" @click="() => { setCurrentPage('home') }">
-      古诗词填空
+      格韵诗途
     </router-link>
 
     <nav class="flex items-center space-x-8 text-lg font-serif">
