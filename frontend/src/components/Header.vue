@@ -32,11 +32,11 @@ export default defineComponent({
     const router = useRouter()
 
     const registerDisabled = computed(() => {
-      return !hasRegisterNameInput || !hasTelInput || !telLegal.value || !hasPasswordInput || !hasConfirmPasswordInput || !isPasswordIdentical.value;
+      return !hasRegisterNameInput || !hasTelInput || !telLegal.value || password.value == '' || !hasConfirmPasswordInput || !isPasswordIdentical.value;
     })
 
     const loginDisabled = computed(() => {
-      return !hasTelInput || !telLegal.value || !hasPasswordInput;
+      return !hasTelInput || !telLegal.value || password.value == '';
     })
 
     const closeDropdown = (event: MouseEvent) => {
@@ -158,7 +158,6 @@ export default defineComponent({
       showRegister,
       isPasswordIdentical,
       hasTelInput,
-      hasPasswordInput,
       hasConfirmPasswordInput,
       telLegal,
       registerDisabled,
@@ -276,7 +275,8 @@ export default defineComponent({
               </div>
             </div>
             <div class="flex justify-between items-center">
-              <button type="submit" class="py-2 px-6 rounded-md shadow-md transition duration-200 text-sm">
+              <button type="submit" class="py-2 px-6 rounded-md shadow-md transition duration-200 text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-700"
+                      :disabled="loginDisabled">
                 登录
               </button>
               <button
