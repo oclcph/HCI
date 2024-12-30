@@ -3,6 +3,7 @@ import {defineComponent, onMounted, ref} from "vue";
 import {getFavorite, deleteFavorite} from "../api/poetry";
 import {Poetry} from "./Poetry.vue";
 import {ElMessage} from "element-plus";
+import eventBus from "../router/eventBus";
 
 export default defineComponent({
   name: "Favorite",
@@ -45,8 +46,11 @@ export default defineComponent({
       }
     }
 
-    onMounted(() => {
-      getAllFavorite();
+    onMounted(async () => {
+      eventBus.setRelativeFooterVisible(false)
+      eventBus.setFixedFooterVisible(false)
+      await getAllFavorite();
+      eventBus.setRelativeFooterVisible(true);
     })
 
     return {
@@ -77,7 +81,7 @@ export default defineComponent({
         <transition name="slide">
           <div v-if="expandedPoems[index]" class="mt-4 text-gray-700">
             <p>{{ poem.content }}</p>
-            <button @click.stop="removePoem(index)" class="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition">
+            <button @click.stop="removePoem(index)" class="px-4 py-2 text-lg font-semibold rounded-lg bg-amber-700 text-white hover:bg-amber-800 transition shadow-md mr-4">
               取消收藏
             </button>
           </div>

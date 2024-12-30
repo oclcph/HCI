@@ -1,7 +1,7 @@
-<!-- src/components/Footer.vue -->
+<!-- src/components/RelativeFooter.vue -->
 <template>
-  <footer class="mt-10 border-t pt-4 text-center text-gray-600">
-    © 2024 古诗词平台. 版权所有.
+  <footer class="border-t pt-1 text-center text-gray-600">
+    © 2024 格韵诗途. 版权所有.
   </footer>
 </template>
 
@@ -9,7 +9,7 @@
 import { defineComponent } from 'vue';
 
 export default defineComponent({
-  name: 'Footer',
+  name: 'RelativeFooter',
 });
 </script>
 

@@ -4,7 +4,7 @@
 
     <div class="contact-info mb-6">
       <h2 class="text-2xl font-semibold mb-2">联系信息</h2>
-      <p>公司名称: <strong>古诗词平台</strong></p>
+      <p>公司名称: <strong>格韵诗途</strong></p>
       <p>地址: <strong>江苏省南京市汉口路22号</strong></p>
       <p>电话: <strong>123-456-7890</strong></p>
       <p>电子邮件: <strong>contact@example.com</strong></p>
@@ -23,7 +23,7 @@
         <label for="message" class="block mb-1">消息</label>
         <textarea id="message" v-model="form.message" class="border border-gray-300 p-2 w-full rounded" rows="4" required></textarea>
       </div>
-      <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-200">
+      <button type="submit" class="bg-red-900 text-white py-2 px-4 rounded hover:bg-red-950 transition duration-200">
         提交
       </button>
     </form>
@@ -40,8 +40,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
-
+import {defineComponent, onMounted, ref} from 'vue';
+import eventBus from "../router/eventBus";
 export default defineComponent({
   name: 'About',
   setup() {
@@ -60,6 +60,10 @@ export default defineComponent({
       form.value.message = '';
     };
 
+    onMounted(() => {
+      eventBus.setFixedFooterVisible(true)
+      eventBus.setRelativeFooterVisible(false)
+    })
     return {
       form,
       submitForm,

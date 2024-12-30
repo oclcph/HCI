@@ -1,15 +1,13 @@
 <script lang="ts">
-import {defineComponent, onMounted, ref, onBeforeUnmount, computed} from 'vue';
-import { useUserStore } from '../store/userStore';
+import {defineComponent, onMounted, ref, onBeforeUnmount, computed, inject} from 'vue';
 import {getUser, loginApi, registerApi } from "../api/user";
 import {useRouter} from "vue-router";
 import { ElMessage } from 'element-plus';
 
 export default defineComponent({
   setup() {
-    const userStore = useUserStore();
-    const isLoggedIn = ref(false); // 创建响应式状态
-    const currentPage = ref('home');
+    const isLoggedIn = ref(inject('isLoggedIn')); // 创建响应式状态
+    const currentPage = ref(inject('currentPage'));
     const showDropdown = ref(false);
     const dropdownMenu = ref<HTMLDivElement | null>(null);
     const showLogin = ref(false)
@@ -25,12 +23,17 @@ export default defineComponent({
     const hasPasswordInput = computed(() => password.value != '')
     // 重复密码是否为空
     const hasConfirmPasswordInput = computed(() => confirmPassword.value != '')
+    const hasRegisterNameInput = computed(() => registerName.value != '')
 
     const chinaMobileRegex = /^1(3[0-9]|4[579]|5[0-35-9]|6[2567]|7[0-8]|8[0-9]|9[189])\d{8}$/
     const telLegal = computed(() => chinaMobileRegex.test(phone.value))
     const isPasswordIdentical = computed(() => password.value == confirmPassword.value)
 
     const router = useRouter()
+
+    const registerDisabled = computed(() => {
+      return !hasRegisterNameInput || !hasTelInput || !telLegal.value || !hasPasswordInput || !hasConfirmPasswordInput || !isPasswordIdentical.value;
+    })
 
     const closeDropdown = (event: MouseEvent) => {
       if (
@@ -77,7 +80,7 @@ export default defineComponent({
           phone.value = '';
           password.value = '';
           confirmPassword.value = '';
-          ElMessage.success('登陆成功')
+          ElMessage.success('登录成功')
           const token = res.data.result
           sessionStorage.setItem('token', token)
         } else if (res.data.code === '400'){
@@ -94,10 +97,13 @@ export default defineComponent({
     }
 
     const register = () => {
+      const now = new Date();
       registerApi({
+        name: registerName.value,
         phone: phone.value,
         password: password.value,
         confirmPassword: confirmPassword.value,
+        createTime: now.toISOString(),
       }).then((res) => {
         if (res.data.code === '000') {
           phone.value = '';
@@ -110,14 +116,17 @@ export default defineComponent({
           ElMessage.error(res.data.message)
         }
       })
-
     }
+
+    const handleErrorRegister = () => {
+      console.log("error")
+    }
+
     const logout = () => {
-      userStore.logout();
-      console.log(userStore.isLoggedIn);
       isLoggedIn.value = false;
       showDropdown.value = false; // 登出时隐藏下拉框
       sessionStorage.setItem('token', '')
+      ElMessage.success("退出登录成功");
     };
 
     const setCurrentPage = (page: string) => {
@@ -146,6 +155,7 @@ export default defineComponent({
       hasPasswordInput,
       hasConfirmPasswordInput,
       telLegal,
+      registerDisabled,
 
       /* 页面切换 */
       currentPage,
@@ -162,6 +172,7 @@ export default defineComponent({
       register,
       logout,
       setCurrentPage,
+      handleErrorRegister,
     };
   },
 });
@@ -170,7 +181,7 @@ export default defineComponent({
 <template>
   <header class="flex justify-between p-6 bg-[#6f1d1b] text-[#d0b28d] text-lg">
     <router-link to="/home" class="logo text-[#c8b68d] font-serif font-extrabold text-3xl" @click="() => { setCurrentPage('home') }">
-      古诗词填空
+      格韵诗途
     </router-link>
 
     <nav class="flex items-center space-x-8 text-lg font-serif">
@@ -207,11 +218,6 @@ export default defineComponent({
                        class="block px-4 py-2 hover:bg-[#d7c08d] text-[#6f1d1b] text-sm font-serif"
                        @click="() => { toggleDropdown(); setCurrentPage('profile') }">
             个人中心
-          </router-link>
-          <router-link to="/settings"
-                       class="block px-4 py-2 hover:bg-[#d7c08d] text-[#6f1d1b] text-sm font-serif"
-                       @click="() => { toggleDropdown(); setCurrentPage('settings') }">
-            设置
           </router-link>
           <router-link to="/"
                        @click="() => { logout(); setCurrentPage('home');}"
@@ -288,8 +294,22 @@ export default defineComponent({
         <div class="bg-white w-96 p-6 rounded-lg shadow-xl transform transition-all duration-300 ease-in-out scale-95">
           <h2 class="text-2xl font-semibold text-gray-700 mb-6 text-center">注册</h2>
           <form @submit.prevent="register">
+            <!-- 用户名输入 -->
             <div class="mb-4">
-              <label for="phone" class="block text-sm font-medium text-gray-700">手机号码</label>
+              <label for="username" class="block text-sm font-medium text-gray-700">用户名<span class="text-red-500">*</span></label>
+              <input
+                  id="username"
+                  v-model="registerName"
+                  type="text"
+                  class="w-full mt-1 p-2 border border-gray-300 rounded-md text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  placeholder="请输入用户名"
+                  required
+              />
+            </div>
+
+            <!-- 手机号码输入 -->
+            <div class="mb-4">
+              <label for="phone" class="block text-sm font-medium text-gray-700">手机号码<span class="text-red-500">*</span></label>
               <input
                   id="phone"
                   v-model="phone"
@@ -302,8 +322,10 @@ export default defineComponent({
                 手机号不合法
               </label>
             </div>
+
+            <!-- 密码输入 -->
             <div class="mb-4">
-              <label for="password" class="block text-sm font-medium text-gray-700">密码</label>
+              <label for="password" class="block text-sm font-medium text-gray-700">密码<span class="text-red-500">*</span></label>
               <div class="relative">
                 <input
                     id="password"
@@ -313,7 +335,6 @@ export default defineComponent({
                     placeholder="请输入密码"
                     required
                 />
-                <!-- 切换密码显示状态按钮 -->
                 <button
                     type="button"
                     @click="togglePasswordVisibility"
@@ -322,9 +343,10 @@ export default defineComponent({
                 </button>
               </div>
             </div>
+
             <!-- 确认密码 -->
             <div class="mb-4">
-              <label for="confirmPassword" class="block text-sm font-medium text-gray-700">确认密码</label>
+              <label for="confirmPassword" class="block text-sm font-medium text-gray-700">确认密码<span class="text-red-500">*</span></label>
               <div class="relative">
                 <input
                     id="confirmPassword"
@@ -334,19 +356,24 @@ export default defineComponent({
                     placeholder="请再次输入密码"
                     required
                 />
-                <!-- 切换密码显示状态按钮 -->
                 <button
                     type="button"
                     @click="togglePasswordVisibility"
                     class="absolute right-3 top-1/2 transform -translate-y-1/2"
                 >
                 </button>
-                <label v-if="hasConfirmPasswordInput && !isPasswordIdentical" for="tel" class="text-red-500 text-sm">两次密码不一致</label>
+                <label v-if="hasConfirmPasswordInput && !isPasswordIdentical" for="tel" class="text-red-500 text-sm">
+                  两次密码不一致
+                </label>
               </div>
             </div>
 
+            <!-- 按钮 -->
             <div class="flex justify-between items-center">
-              <button type="submit" class="py-2 px-6 rounded-md shadow-md transition duration-200 text-sm">
+              <button type="submit"
+                      class="py-2 px-6 rounded-md shadow-md transition duration-200 text-sm
+                             disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-700"
+                      :disabled="registerDisabled">
                 注册
               </button>
               <button
@@ -358,11 +385,13 @@ export default defineComponent({
               </button>
             </div>
           </form>
+
           <p class="text-center text-sm mt-4">
             <span @click="showLoginPage" class="text-blue-500 cursor-pointer">已有账号？点击这里登录</span>
           </p>
         </div>
       </div>
+
     </div>
   </header>
 </template>
@@ -399,6 +428,11 @@ button {
 
 button:hover {
   background-color: #634229; /* 悬停时变为更暗的古铜色 */
+}
+
+button:disabled:hover {
+  background-color: #D1D5DB; /* 禁用状态下的背景色，与正常禁用保持一致 */
+  cursor: not-allowed; /* 确保鼠标指针在禁用状态下显示不可用 */
 }
 
 button:focus {

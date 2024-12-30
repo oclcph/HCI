@@ -8,27 +8,36 @@
       <!-- 路由视图，根据路由显示不同页面 -->
       <router-view />
     </main>
-    <Footer v-if="eventBus.footerVisible"/>
+    <FixedFooter v-if="eventBus.fixedFooterVisible" class="fixedFooter"/>
+    <RelativeFooter v-if="eventBus.relativeFooterVisible" class="relativeFooter"/>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import {defineComponent, provide, ref} from 'vue';
 import Header from './components/Header.vue'; // 导入头部组件
-import Footer from "./components/Footer.vue";
+import FixedFooter from "./components/FixedFooter.vue";
+import RelativeFooter from "./components/RelativeFooter.vue";
 import eventBus from "./router/eventBus";
-// import backgroundImage from './assets/bg.jpg'
 
 export default defineComponent({
   name: 'App',
   components: {
     Header,  // 注册 Header 组件
-    Footer,
+    FixedFooter,
+    RelativeFooter,
   },
   data() {
+    const currentPage = ref('home'); // 默认页面
+    const isLoggedIn = ref(false);
+
+    provide('currentPage', currentPage); // 提供 currentPage
+    provide('isLoggedIn', isLoggedIn);
     return {
+      currentPage,
       eventBus,
     };
+
   },
 });
 </script>
@@ -48,5 +57,21 @@ body {
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed; /* 固定背景 */
+}
+.fixedFooter {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 30px;
+  padding: 10px; /* 示例内边距 */
+}
+.relativeFooter {
+  position: relative;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 30px;
+  padding: 10px; /* 示例内边距 */
 }
 </style>

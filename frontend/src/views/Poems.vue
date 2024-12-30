@@ -121,12 +121,13 @@ export default defineComponent({
     }
 
     onMounted(async () => {
-      eventBus.setFooterVisible(false);
+      eventBus.setRelativeFooterVisible(false);
+      eventBus.setFixedFooterVisible(false);
       await getAllPoems();
       await nextTick();
       isLoaded.value = true;
       await initAddedPoems();
-      eventBus.setFooterVisible(true);
+      eventBus.setRelativeFooterVisible(true);
     })
 
     return {
@@ -162,7 +163,7 @@ export default defineComponent({
       />
       <button
           @click="search"
-      class="ml-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 animate-fade-in delay-300"
+      class="ml-2 px-4 py-2 font-semibold bg-red-900 text-white rounded hover:bg-red-950 animate-fade-in delay-300"
       >
       搜索
       </button>
@@ -184,7 +185,7 @@ export default defineComponent({
           <button
               v-if="!addedToFavorite[poem.id]"
               @click.stop="addFavorite(poem.id)"
-              class="px-4 py-2 text-lg font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition shadow-md mr-4"
+              class="px-4 py-2 text-lg font-semibold rounded-lg bg-red-900 text-white hover:bg-red-950 transition shadow-md mr-4"
           >
             收藏
           </button>
@@ -192,7 +193,7 @@ export default defineComponent({
           <button
               v-else
               @click.stop="removeFavorite(poem.id)"
-              class="px-4 py-2 text-lg font-semibold rounded-lg bg-red-600 text-white hover:bg-red-700 transition shadow-md mr-4"
+              class="px-4 py-2 text-lg font-semibold rounded-lg bg-amber-700 text-white hover:bg-amber-800 transition shadow-md mr-4"
           >
             取消收藏
           </button>

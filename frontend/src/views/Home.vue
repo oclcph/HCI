@@ -1,7 +1,7 @@
 <template>
   <div class="home-page">
     <header class="header">
-      <h1>欢迎来到古诗词网!</h1>
+      <h1>欢迎来到格韵诗途!</h1>
       <p class="subtitle">请选择一个模式开始尝试</p>
     </header>
     <div class="container">
@@ -43,9 +43,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import {defineComponent, onMounted, ref} from 'vue';
 import {useRouter} from "vue-router";
 import {ElMessage} from "element-plus";
+import eventBus from "../router/eventBus";
 
 export default defineComponent({
   name: 'HomePage',
@@ -69,6 +70,10 @@ export default defineComponent({
         }
       }
     };
+    onMounted(() => {
+      eventBus.setFixedFooterVisible(true);
+      eventBus.setRelativeFooterVisible(false);
+    })
     return {
       handleClick,
     };
